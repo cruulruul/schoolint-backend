@@ -30,3 +30,16 @@ Autentimisega kaitstud (vajalik "Admin" roll tokenis)
 - GET (/users/{id}) - Tagastab {id} alusel olemasolul kasutaja
 - DEL (/users/{id}) - Kustutab {id} alusel olemasolul kasutaja
 - PATCH (/users/{id} - Võimaldab {id} alusel uuendada kasutaja järgmisi võtmeid (firstName, lastName, email, password)
+
+2. Candidates - Mõeldud SAIS-ist kandidaatide importimiseks (hetkel mock ja fiktiivne, et saaks front-end arendust teha).
+
+Autentimise kaitstud (rolli ei kontrollita)
+
+- GET (/candidates) - Tagastab kõik kandidaadid
+- GET (/candidates/{id}) - Tagastab {id} alusel olemasolul kandidaadi
+- PATCH (/candidates/{id} - Võimaldab {id} alusel uuendada kandidaadi järgmisi võtmeid (firstName, lastName, email, personalId)
+- POST (/candidates) - Kandidaatide laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
+
+Vajalik "Admin" roll
+
+- DEL (/candidates/{id}) - Kustutab {id} alusel olemasolul kandidaadi

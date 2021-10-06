@@ -17,6 +17,29 @@ const database = {
       role: 'User',
     },
   ],
+  candidates: [
+    {
+      id: 1,
+      firstName: 'John',
+      lastName: 'Smith',
+      email: 'john.smith@gmail.com',
+      personalId: '39199876789',
+    },
+    {
+      id: 2,
+      firstName: 'Uku',
+      lastName: 'Lele',
+      email: 'uku.lele@gmail.com',
+      personalId: '39199276789',
+    },
+    {
+      id: 3,
+      firstName: 'Mati',
+      lastName: 'Tati',
+      email: 'mati.tati@gmail.com',
+      personalId: '39129276789',
+    },
+  ],
 };
 
 module.exports = database;

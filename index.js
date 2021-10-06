@@ -2,6 +2,7 @@ const express = require('express');
 const config = require('./config');
 const {
   usersRoutes,
+  candidatesRoutes,
 } = require('./api/routes');
 const { logger } = require('./api/middlewares');
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(logger);
 // Routes
 app.use('/users', usersRoutes);
+app.use('/candidates', candidatesRoutes);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
