@@ -6,7 +6,7 @@ const {
 const { logger } = require('./api/middlewares');
 
 const app = express();
-const { port } = config || 3000;
+const { port } = config || 3001;
 
 // Middleware for creating req.body in express app
 app.use(express.json());
