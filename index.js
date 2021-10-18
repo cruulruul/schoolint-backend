@@ -3,6 +3,7 @@ const config = require('./config');
 const {
   usersRoutes,
   candidatesRoutes,
+  excelImportRoutes
 } = require('./api/routes');
 const { logger } = require('./api/middlewares');
 
@@ -16,6 +17,7 @@ app.use(logger);
 // Routes
 app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
+app.use('/import', excelImportRoutes);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console

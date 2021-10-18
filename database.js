@@ -24,6 +24,7 @@ const database = {
       lastName: 'Smith',
       email: 'john.smith@gmail.com',
       personalId: '39199876789',
+      score: 89
     },
     {
       id: 2,
@@ -31,6 +32,7 @@ const database = {
       lastName: 'Lele',
       email: 'uku.lele@gmail.com',
       personalId: '39199276789',
+      score: 89
     },
     {
       id: 3,
@@ -38,6 +40,7 @@ const database = {
       lastName: 'Tati',
       email: 'mati.tati@gmail.com',
       personalId: '39129276789',
+      score: 89
     },
   ],
 };
