@@ -22,7 +22,7 @@ Endpoint'id:
 
 - POST (/users) - Loob uue kasutaja kui kaasa on antud JSON body's järgmised võtmed (vaikimisi luuakse "User" roll tüüpi kasutaja):
 - Näiteks: {"firstName": "Caspar","lastName": "Ruul","email": "caspar@example.com", "password": "midagi"}
-- POST (/login) - Tagastab bearer tokeni, mida saab kasutada järgmiste endpointide ligipääsuks (tokeni sees on ka kasutaja roll)
+- POST (users/login) - Tagastab bearer tokeni, mida saab kasutada järgmiste endpointide ligipääsuks (tokeni sees on ka kasutaja roll)
 
 Autentimisega kaitstud (vajalik "Admin" roll tokenis)
 
