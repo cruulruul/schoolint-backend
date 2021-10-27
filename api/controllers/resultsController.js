@@ -55,8 +55,8 @@ resultsController.createResults = (req, res) => {
 /**
  * Update result
  * PATCH - /result/:id
- * Required values: id, firstName OR lastName OR personalId
- * Optional values: firstName, lastName, personalId
+ * Required values: id, candidateId OR score
+ * Optional values: candidateId, Score
  * Success: status 200 - OK and success message
  * Error: status 400 - Bad Request and error message
  * Error: status 500 - Server error and error message
