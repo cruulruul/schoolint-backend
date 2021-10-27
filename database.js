@@ -24,23 +24,40 @@ const database = {
       lastName: 'Smith',
       email: 'john.smith@gmail.com',
       personalId: '39199876789',
-      score: 89
+      score: 89,
     },
     {
       id: 2,
       firstName: 'Uku',
       lastName: 'Lele',
       email: 'uku.lele@gmail.com',
-      personalId: '39199276789',
-      score: 89
+      personalId: '39199276787',
+      score: 89,
     },
     {
       id: 3,
       firstName: 'Mati',
       lastName: 'Tati',
       email: 'mati.tati@gmail.com',
-      personalId: '39129276789',
-      score: 89
+      personalId: '39129276786',
+      score: 89,
+    },
+  ],
+  results: [
+    {
+      id: 1,
+      candidateId: 1,
+      score: 89,
+    },
+    {
+      id: 2,
+      candidateId: 2,
+      score: 90,
+    },
+    {
+      id: 3,
+      candidateId: 3,
+      score: 91,
     },
   ],
 };

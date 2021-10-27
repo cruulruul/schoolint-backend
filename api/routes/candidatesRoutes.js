@@ -1,7 +1,7 @@
 const express = require('express');
-const candidatesController = require('../controllers/candidatesController');
-const { isLoggedIn, isAdmin } = require('../middlewares');
 const cors = require('cors');
+const { candidatesController } = require('../controllers');
+const { isLoggedIn, isAdmin } = require('../middlewares');
 
 const router = express.Router();
 

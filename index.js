@@ -1,25 +1,25 @@
 const express = require('express');
+const logger = require('morgan');
 const config = require('./config');
 const {
   usersRoutes,
   candidatesRoutes,
-  excelImportRoutes
+  excelImportRoutes,
+  resultsRoutes,
 } = require('./api/routes');
-const { logger } = require('./api/middlewares');
 
 const app = express();
+app.use(logger('dev'));
 const { port } = config || 3001;
 
 // Middleware for creating req.body in express app
 app.use(express.json());
-// Logger middleware
-app.use(logger);
 // Routes
 app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
 app.use('/import', excelImportRoutes);
+app.use('/results', resultsRoutes);
 
 app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server is running on: ${port}`);
+  console.log(`Back-end server is running on: ${port}`);
 });
