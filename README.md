@@ -43,3 +43,16 @@ Autentimise kaitstud (rolli ei kontrollita)
 Vajalik "Admin" roll
 
 - DEL (/candidates/{id}) - Kustutab {id} alusel olemasolul kandidaadi
+
+3. Results - Mõeldud kandidaatide tulemuste importimiseks (hetkel mock ja fiktiivne, et saaks front-end arendust teha).
+
+Autentimise kaitstud (rolli ei kontrollita)
+
+- GET (/results) - Tagastab kõik tulemused
+- GET (/results/{id}) - Tagastab {id} alusel olemasolul tulemuse
+- PATCH (/results/{id} - Võimaldab {id} alusel uuendada kandidaadi tulemuse järgmisi võtmeid (candidateId, score)
+- POST (/results) - Tulemuste laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
+
+Vajalik "Admin" roll
+
+- DEL (/results/{id}) - Kustutab {id} alusel olemasolul tulemuse
