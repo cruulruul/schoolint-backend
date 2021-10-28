@@ -56,3 +56,16 @@ Autentimise kaitstud (rolli ei kontrollita)
 Vajalik "Admin" roll
 
 - DEL (/results/{id}) - Kustutab {id} alusel olemasolul tulemuse
+
+4. Templates - Mõeldud importimise väljade mallide jaoks.
+
+Autentimise kaitstud (rolli ei kontrollita)
+
+- GET (/templates) - Tagastab kõik mallid
+- GET (/templates/{id}) - Tagastab {id} alusel olemasolul malli
+- PATCH (/templates/{id} - Võimaldab {id} alusel uuendada malli järgmisi võtmeid (name, fields ([<fieldname>, <fieldname>]))
+- POST (/templates) - mallide laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
+
+Vajalik "Admin" roll
+
+- DEL (/templates/{id}) - Kustutab {id} alusel olemasolul malli
