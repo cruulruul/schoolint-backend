@@ -60,6 +60,13 @@ const database = {
       score: 91,
     },
   ],
+  templates: [
+    {
+      id: 1,
+      name: 'SAIS',
+      fields: ['firstName', 'lastName', 'email', 'personalId'],
+    },
+  ],
 };
 
 module.exports = database;

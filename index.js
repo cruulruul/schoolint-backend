@@ -6,6 +6,7 @@ const {
   candidatesRoutes,
   excelImportRoutes,
   resultsRoutes,
+  templatesRoutes,
 } = require('./api/routes');
 
 const app = express();
@@ -19,6 +20,7 @@ app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
 app.use('/import', excelImportRoutes);
 app.use('/results', resultsRoutes);
+app.use('/templates', templatesRoutes);
 
 app.listen(port, () => {
   console.log(`Back-end server is running on: ${port}`);
