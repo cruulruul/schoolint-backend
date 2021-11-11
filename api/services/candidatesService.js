@@ -18,14 +18,19 @@ candidatesService.getCandidateById = (id) => {
 };
 
 // Creates new candidates
-candidatesService.createCandidates = () => {
+candidatesService.createCandidates = (jsonData) => {
+  const sheetData = jsonData[Object.keys(jsonData)[0]];
+  database.candidates = database.candidates.concat(sheetData);
   const candidates = true;
+  console.log(database.candidates);
   return candidates;
 };
 
 // updates candidate
 candidatesService.updateCandidate = async (candidate) => {
-  const index = database.candidates.findIndex((element) => element.id === candidate.id);
+  const index = database.candidates.findIndex(
+    (element) => element.id === candidate.id,
+  );
   if (candidate.firstName) {
     database.candidates[index].firstName = candidate.firstName;
   }

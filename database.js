@@ -64,7 +64,11 @@ const database = {
     {
       id: 1,
       name: 'SAIS',
-      fields: ['firstName', 'lastName', 'email', 'personalId'],
+      values: {
+        Sheet1: {
+          fields: ['firstName', 'lastName', 'email', 'personalId', 'score'],
+        },
+      },
     },
   ],
 };
