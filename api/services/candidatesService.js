@@ -20,6 +20,9 @@ candidatesService.getCandidateById = (id) => {
 // Creates new candidates
 candidatesService.createCandidates = (jsonData) => {
   const sheetData = jsonData[Object.keys(jsonData)[0]];
+  for (let i = 0; i < sheetData.length; i += 1) {
+    sheetData[Object.keys(sheetData)[i]].id = database.candidates.length + 1;
+  }
   database.candidates = database.candidates.concat(sheetData);
   const candidates = true;
   console.log(database.candidates);
