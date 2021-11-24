@@ -9,7 +9,7 @@ const router = express.Router();
  * candidates API endpoints
  */
 router
-  .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
+  // .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
   .use(cors())
   .get('/', candidatesController.getCandidates)
   .get('/:id', candidatesController.getCandidateById)

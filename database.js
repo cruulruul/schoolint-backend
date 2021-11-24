@@ -311,26 +311,31 @@ const database = {
       },
     },
   ],
-  lists: [
+  candidatesLists: [
     {
       id: 1,
-      listCode: 'RIF19'
+      listCode: 'RIF19',
+      year: 2019
     },
     {
       id: 2,
-      listCode: 'LO21'
+      listCode: 'LO21',
+      year: 2021
     },
     {
       id: 3,
-      listCode: 'KTD19'
+      listCode: 'KTD19',
+      year: 2019
     },
     {
       id: 4,
-      listCode: 'RIF20'
+      listCode: 'RIF20',
+      year: 2020
     },
     {
       id: 5,
-      listCode: 'LO21'
+      listCode: 'LO21',
+      year: 2021
     },
   ]
 };

@@ -66,6 +66,7 @@ candidatesController.updateCandidate = async (req, res) => {
     lastName,
     email,
     personalId,
+    notes
   } = req.body;
   if (!id && !(firstName || lastName || email || personalId)) {
     res.status(400).json({
@@ -84,6 +85,7 @@ candidatesController.updateCandidate = async (req, res) => {
     lastName,
     email,
     personalId,
+    notes
   };
   const success = await candidatesService.updateCandidate(candidateToUpdate);
   if (!success) {

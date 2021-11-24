@@ -46,6 +46,9 @@ candidatesService.updateCandidate = async (candidate) => {
   if (candidate.personalId) {
     database.candidates[index].personalId = candidate.personalId;
   }
+  if (candidate.notes) {
+    database.candidates[index].notes = candidate.notes;
+  }
   return true;
 };
 
