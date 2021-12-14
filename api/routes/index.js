@@ -3,6 +3,7 @@ const candidatesRoutes = require('./candidatesRoutes');
 const resultsRoutes = require('./resultsRoutes');
 const templatesRoutes = require('./templatesRoutes');
 const uploadRoutes = require('./uploadRoutes');
+const candidatesListsRoutes = require('./candidatesListsRoutes');
 
 module.exports = {
   usersRoutes,
@@ -10,4 +11,5 @@ module.exports = {
   resultsRoutes,
   templatesRoutes,
   uploadRoutes,
+  candidatesListsRoutes,
 };

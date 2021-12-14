@@ -3,6 +3,7 @@ const candidatesController = require('./candidatesController');
 const resultsController = require('./resultsController');
 const templatesController = require('./templatesController');
 const uploadController = require('./uploadController');
+const candidatesListsController = require('./candidatesListsController');
 
 module.exports = {
   usersController,
@@ -10,4 +11,5 @@ module.exports = {
   resultsController,
   templatesController,
   uploadController,
+  candidatesListsController,
 };

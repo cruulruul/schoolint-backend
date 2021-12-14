@@ -66,8 +66,12 @@ candidatesController.updateCandidate = async (req, res) => {
     lastName,
     email,
     personalId,
+    notes,
+    present,
+    comments,
   } = req.body;
-  if (!id && !(firstName || lastName || email || personalId)) {
+
+  if (!id && !(firstName || lastName || email || personalId, present)) {
     res.status(400).json({
       error: 'Required data is missing',
     });
@@ -84,7 +88,11 @@ candidatesController.updateCandidate = async (req, res) => {
     lastName,
     email,
     personalId,
+    notes,
+    present,
+    comments,
   };
+
   const success = await candidatesService.updateCandidate(candidateToUpdate);
   if (!success) {
     return res.status(500).json({
