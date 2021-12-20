@@ -3,6 +3,11 @@ const config = {
   saltRounds: 10,
   jwtSecret: 'secret',
   baseDir: __dirname,
+  db: {
+    host: '',
+    user: '',
+    password: '',
+  },
 };
 
 module.exports = config;
