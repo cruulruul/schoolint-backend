@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db-generate" : "node db/generate.js",
-    "db-seed" : "node db/seed.js"
+    "db-generate": "node db/generate.js",
+    "db-seed": "node db/seed.js"
   },
   "repository": {
     "type": "git",

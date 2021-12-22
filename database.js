@@ -15,6 +15,34 @@ const database = {
       password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
       email: 'test@yourdomain.com',
       role: 'User',
+      specialityCode: 'RIF'
+    },
+    {
+      id: 3,
+      firstName: 'Test',
+      lastName: 'User',
+      password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
+      email: 'test@yourdomain.com',
+      role: 'User',
+      specialityCode: 'KTD'
+    },
+    {
+      id: 4,
+      firstName: 'Test',
+      lastName: 'User',
+      password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
+      email: 'test@yourdomain.com',
+      role: 'User',
+      specialityCode: 'LO'
+    },
+    {
+      id: 5,
+      firstName: 'Test',
+      lastName: 'User',
+      password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
+      email: 'test@yourdomain.com',
+      role: 'User',
+      specialityCode: 'TE'
     },
   ],
   candidates: [
@@ -366,6 +394,18 @@ const database = {
       year: 2021,
     },
   ],
+  tags: [
+    {
+      id: 1,
+      name: 'energiline',
+      courseId: 1
+    },
+    {
+      id: 2,
+      name: 'motiveeritud',
+      courseId: 2
+    }
+  ]
 };
 
 module.exports = database;

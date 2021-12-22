@@ -9,6 +9,7 @@ const {
   resultsRoutes,
   templatesRoutes,
   candidatesListsRoutes,
+  candidatesTagsRoutes
 } = require('./api/routes');
 
 global.__basedir = __dirname;
@@ -25,6 +26,7 @@ app.use('/upload', uploadRoutes);
 app.use('/results', resultsRoutes);
 app.use('/templates', templatesRoutes);
 app.use('/lists', candidatesListsRoutes);
+app.use('/tags', candidatesTagsRoutes);
 
 app.listen(port, () => {
   console.log(`Back-end server is running on: ${port}`);
