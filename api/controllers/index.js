@@ -13,5 +13,5 @@ module.exports = {
   templatesController,
   uploadController,
   candidatesListsController,
-  candidatesTagsController
+  candidatesTagsController,
 };

@@ -15,7 +15,7 @@ const database = {
       password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
       email: 'test@yourdomain.com',
       role: 'User',
-      specialityCode: 'RIF'
+      specialityCode: 'RIF',
     },
     {
       id: 3,
@@ -24,7 +24,7 @@ const database = {
       password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
       email: 'test@yourdomain.com',
       role: 'User',
-      specialityCode: 'KTD'
+      specialityCode: 'KTD',
     },
     {
       id: 4,
@@ -33,7 +33,7 @@ const database = {
       password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
       email: 'test@yourdomain.com',
       role: 'User',
-      specialityCode: 'LO'
+      specialityCode: 'LO',
     },
     {
       id: 5,
@@ -42,7 +42,7 @@ const database = {
       password: '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai',
       email: 'test@yourdomain.com',
       role: 'User',
-      specialityCode: 'TE'
+      specialityCode: 'TE',
     },
   ],
   candidates: [
@@ -398,14 +398,14 @@ const database = {
     {
       id: 1,
       name: 'energiline',
-      courseId: 1
+      courseId: 1,
     },
     {
       id: 2,
       name: 'motiveeritud',
-      courseId: 2
-    }
-  ]
+      courseId: 2,
+    },
+  ],
 };
 
 module.exports = database;

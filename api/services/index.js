@@ -11,5 +11,5 @@ module.exports = {
   resultsService,
   templatesService,
   candidatesListsService,
-  candidatesTagsService
+  candidatesTagsService,
 };

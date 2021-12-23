@@ -9,7 +9,7 @@ const {
   resultsRoutes,
   templatesRoutes,
   candidatesListsRoutes,
-  candidatesTagsRoutes
+  candidatesTagsRoutes,
 } = require('./api/routes');
 
 global.__basedir = __dirname;
