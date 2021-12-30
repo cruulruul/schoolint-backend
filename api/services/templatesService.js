@@ -1,51 +1,102 @@
 /* eslint-disable operator-linebreak */
-const database = require('../../database');
+const db = require('../../db');
 
 const templatesService = {};
 
-// Returns list of templates
-templatesService.getTemplates = () => {
-  const { templates } = database;
+/**
+ * All templates query from the database
+ * @returns {json}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
+templatesService.getTemplates = async () => {
+  const templates = await db.query(
+    `SELECT 
+    T.id, T.name
+  FROM Template T;`,
+  );
+  if (!templates[0]) return false;
   return templates;
 };
 
-// Find template by id. Returns template if found or false.
-templatesService.getTemplateById = (id) => {
-  const template = database.templates.find(
-    (element) => element.id === parseInt(id, 10),
+/**
+ * Single template query from the database
+ * @param {int} id
+ * @returns {json}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
+templatesService.getTemplateById = async (id) => {
+  const template = await db.query(
+    `SELECT 
+      T.id, T.name , CONCAT('["', REPLACE(GROUP_CONCAT(TF.name), ',', '","'), '"]') as fields
+    FROM Template T
+    INNER JOIN TemplateFields TF
+      ON T.id = TF.Template_id
+    WHERE T.id = ?
+    GROUP BY T.id;`,
+    [id],
   );
-  if (template) {
-    return template;
+  if (!template[0]) return false;
+  return template[0];
+};
+
+/**
+ * Sheet fields query from the database
+ * @param {string} id
+ * @returns {json}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
+templatesService.getSheetsFieldsByTemplateId = async (id) => {
+  const fields = await db.query(
+    `SELECT 
+      TS.name, CONCAT('["', REPLACE(GROUP_CONCAT(TF.name), ',', '","'), '"]') as fields
+    FROM TemplateSheet TS
+    LEFT JOIN TemplateFields TF
+      ON TS.id = TF.TemplateSheet_id
+    WHERE TS.Template_id = ?
+    GROUP BY TS.id;`,
+    [id],
+  );
+  if (!fields) return false;
+  return fields;
+};
+
+/**
+ * Inserts query, new template with fields into the database.
+ * @param {json} newTemplate
+ * @returns {json}
+ * Returns JSON, new template Id
+ */
+templatesService.createTemplates = async (newTemplate) => {
+  let result = await db.query('INSERT INTO Template (name) VALUES (?);', [
+    newTemplate.name,
+  ]);
+  const newTemplateId = result.insertId;
+  newTemplate.fields.forEach(async (element) => {
+    result = await db.query(
+      'INSERT INTO TemplateFields (Template_id, name) VALUES (?, ?);',
+      [newTemplateId, element],
+    );
+  });
+  return newTemplateId;
+};
+
+/**
+ * Delete query, remove given template and it's fields
+ * @param {int} id
+ * @returns {boolean}
+ * If rowcount is not 1, return false.
+ * On success return true.
+ */
+templatesService.deleteTemplateById = async (id) => {
+  await db.query('DELETE FROM TemplateFields WHERE Template_id = ?', [id]);
+  const result = await db.query('DELETE FROM Template WHERE id = ?', [id]);
+  if (result.affectedRows === 1) {
+    return true;
   }
   return false;
-};
-
-// Creates new template
-templatesService.createTemplates = () => {
-  const result = true;
-  return result;
-};
-
-// Updates template
-templatesService.updateTemplate = async (template) => {
-  const index = database.templates.findIndex(
-    (element) => element.id === template.id,
-  );
-  if (template.name) {
-    database.templates[index].name = template.name;
-  }
-  if (template.fields) {
-    database.templates[index].fields = template.fields;
-  }
-  return true;
-};
-
-// Deletes template
-templatesService.deleteTemplateById = (id) => {
-  const index = database.templates.findIndex((element) => element.id === id);
-  // Remove template from 'database'
-  database.templates.splice(index, 1);
-  return true;
 };
 
 templatesService.validateJson = async (templateId, data) => {

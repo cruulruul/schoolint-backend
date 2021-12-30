@@ -1,81 +1,122 @@
-const database = require('../../database');
 const jwtService = require('./jwtService');
 const hashService = require('./hashService');
+const db = require('../../db');
 
 const usersService = {};
 
 // Returns list of users
-usersService.getUsers = () => {
-  const { users } = database;
+usersService.getUsers = async () => {
+  const users = await db.query(
+    `SELECT
+      U.id, U.first_name as firstName, U.last_name as lastName, U.email, UR.name as role, C.name as specialityCode
+    FROM
+      User U
+    INNER JOIN
+      UserRole UR on U.UserRole_id=UR.id
+    LEFT JOIN
+      Course C on U.Course_id=C.id
+    WHERE
+      U.deleted=0;`,
+  );
   return users;
 };
 
 // Find user by id. Returns user if found or false.
-usersService.getUserById = (id) => {
-  const user = database.users.find((element) => element.id === id);
-  if (user) {
-    return user;
-  }
-  return false;
+usersService.getUserById = async (id) => {
+  const user = await db.query(
+    `SELECT
+      U.id, U.first_name as firstName, U.last_name as lastName, U.email, UR.name as role, C.name as specialityCode
+    FROM
+      schoolint.User U
+    INNER JOIN
+      schoolint.UserRole UR on U.UserRole_id=UR.id
+    LEFT JOIN
+      schoolint.Course C on U.Course_id=C.id
+    WHERE
+      U.id = ? and
+      U.deleted=0;`,
+    [id],
+  );
+  if (!user[0]) return false;
+  return user[0];
 };
 
 // Creates new user, returns id on new user
 usersService.createUser = async (newUser) => {
-  const existingUser = usersService.getUserByEmail(newUser.email);
+  const existingUser = await usersService.getUserByEmail(newUser.email);
   if (existingUser) {
-    return { error: 'User already exists' };
+    return { error: `User with email ${newUser.email} already exists` };
   }
-  const id = database.users.length + 1;
+
   const hash = await hashService.hash(newUser.password);
   const user = {
-    id,
-    firstName: newUser.firstName,
-    lastName: newUser.lastName,
+    first_name: newUser.firstName,
+    last_name: newUser.lastName,
     password: hash,
     email: newUser.email,
-    role: 'User',
+    UserRole_id: newUser.roledId ? newUser.roledId : 2,
+    Course_id: newUser.Course_id,
   };
-  database.users.push(user);
-  return { id };
+  const result = await db.query('INSERT INTO `User` SET ?', [user]);
+  return { id: result.insertId };
 };
 
 // Updates user
 usersService.updateUser = async (user) => {
-  const index = database.users.findIndex((element) => element.id === user.id);
+  const userToUpdate = {};
   if (user.firstName) {
-    database.users[index].firstName = user.firstName;
+    userToUpdate.first_name = user.firstName;
   }
   if (user.lastName) {
-    database.users[index].lastName = user.lastName;
+    userToUpdate.last_name = user.lastName;
   }
   if (user.email) {
-    database.users[index].email = user.email;
+    userToUpdate.email = user.email;
   }
   if (user.password) {
     const hash = await hashService.hash(user.password);
-    database.users[index].password = hash;
+    userToUpdate.password = hash;
   }
+  if (user.courseId) {
+    userToUpdate.Course_id = user.courseId;
+  }
+  if (user.roleId) {
+    userToUpdate.UserRole_id = user.roleId;
+  }
+  await db.query('UPDATE `User` SET ? WHERE id = ?', [userToUpdate, user.id]);
   return true;
 };
 
 // Find user by email. Returns user if found or undefined
-usersService.getUserByEmail = (email) => {
-  const user = database.users.find((element) => element.email === email);
-  return user;
+usersService.getUserByEmail = async (email) => {
+  const user = await db.query(
+    `SELECT
+      U.id, U.email, UR.name as role, U.password
+    FROM
+      User U
+    INNER JOIN
+      UserRole UR on U.UserRole_id=UR.id
+    LEFT JOIN
+      Course C on U.Course_id=C.id
+    WHERE
+      U.email = ? and
+      U.deleted=0;`,
+    [email],
+  );
+  if (!user[0]) return false;
+  return user[0];
 };
 
 // Deletes user
-usersService.deleteUserById = (id) => {
-  const index = database.users.findIndex((element) => element.id === id);
-  // Remove user from 'database'
-  database.users.splice(index, 1);
+usersService.deleteUserById = async (id) => {
+  await db.query('UPDATE `User` SET deleted = 1 WHERE id = ?', [id]);
   return true;
 };
 
 // User login
 usersService.login = async (login) => {
   const { email, password } = login;
-  const user = usersService.getUserByEmail(email);
+  const user = await usersService.getUserByEmail(email);
   if (!user) return { error: 'No user found' };
   const match = await hashService.compare(password, user.password);
   if (!match) return { error: 'Wrong password' };

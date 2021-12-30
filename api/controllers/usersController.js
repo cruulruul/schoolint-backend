@@ -9,8 +9,8 @@ const usersController = {};
  * Optional values: none
  * Success: status 200 - OK and list of users
  */
-usersController.getUsers = (req, res) => {
-  const users = usersService.getUsers();
+usersController.getUsers = async (req, res) => {
+  const users = await usersService.getUsers();
   res.status(200).json({ users });
 };
 
@@ -22,9 +22,9 @@ usersController.getUsers = (req, res) => {
  * Success: status 200 - OK and user with specified id
  * Error: status 400 - Bad Request and error message
  */
-usersController.getUserById = (req, res) => {
+usersController.getUserById = async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const user = usersService.getUserById(id);
+  const user = await usersService.getUserById(id);
   if (!user) {
     return res.status(400).json({
       error: `No user found with id: ${id}`,
@@ -39,25 +39,34 @@ usersController.getUserById = (req, res) => {
  * Create new user
  * POST - /users
  * Required values: firstName, lastName, email, password
- * Optional values: none
+ * Optional values: courseId, roleId
  * Success: status 201 - Created and id of created user
  * Error: status 400 - Bad Request and error message
  */
 usersController.createUser = async (req, res) => {
-  const {
-    firstName, lastName, email, password,
-  } = req.body;
+  const { firstName, lastName, email, password, courseId, roleId } = req.body;
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
       error: 'Required data is missing.',
     });
   }
+
+  const existingUser = await usersService.getUserByEmail(email);
+  if (existingUser) {
+    return res.status(409).json({
+      error: `User with ${email} already exists`,
+    });
+  }
+
   const user = {
     firstName,
     lastName,
     email,
     password,
+    courseId,
+    roleId,
   };
+
   const data = await usersService.createUser(user);
   if (data.error) {
     return res.status(409).json({
@@ -79,9 +88,7 @@ usersController.createUser = async (req, res) => {
  * Error: status 403 - Unauthorized and error message
  */
 usersController.login = async (req, res) => {
-  const {
-    email, password,
-  } = req.body;
+  const { email, password } = req.body;
   if (!email && !password) {
     return res.status(400).json({
       error: 'Email or password missing',
@@ -113,15 +120,15 @@ usersController.login = async (req, res) => {
  */
 usersController.updateUser = async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const {
-    firstName,
-    lastName,
-    email,
-    password,
-  } = req.body;
-  if (!id && !(firstName || lastName || email || password)) {
+  const { firstName, lastName, email, password, courseId, roleId } = req.body;
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+  if (!(firstName || lastName || email || password || courseId || roleId)) {
     res.status(400).json({
-      error: 'Id, firstName or lastName is missing',
+      error: 'Required data is missing',
     });
   }
   const user = usersService.getUserById(id);
@@ -136,6 +143,8 @@ usersController.updateUser = async (req, res) => {
     lastName,
     email,
     password,
+    courseId,
+    roleId,
   };
   const success = await usersService.updateUser(userToUpdate);
   if (!success) {
@@ -157,19 +166,25 @@ usersController.updateUser = async (req, res) => {
  * Error: status 400 - Bad Request and error message
  * Error: status 500 - Server error and error message
  */
-usersController.deleteUserById = (req, res) => {
+usersController.deleteUserById = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+
   // Check if user exists
-  const user = usersService.getUserById(id);
+  const user = await usersService.getUserById(id);
   if (!user) {
     return res.status(400).json({
       error: `No user found with id: ${id}`,
     });
   }
-  const success = usersService.deleteUserById(id);
+  const success = await usersService.deleteUserById(id);
   if (!success) {
     return res.status(500).json({
-      error: 'Something went wrong while deleting user',
+      error: 'Something went wrong while deleting the user',
     });
   }
   return res.status(204).end();

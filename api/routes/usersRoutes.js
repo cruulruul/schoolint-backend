@@ -10,11 +10,13 @@ const router = express.Router();
  */
 router
   .use(cors())
-  .post('/', usersController.createUser)
   .post('/login', usersController.login)
-  .use(isLoggedIn)
-  .get('/', isAdmin, usersController.getUsers)
-  .get('/:id', isAdmin, validators.getUserById, usersController.getUserById)
+  // .use(isLoggedIn)
+  .get('/', usersController.getUsers)
+  // .get('/', isAdmin, usersController.getUsers)
+  .get('/:id', validators.getUserById, usersController.getUserById)
+  .post('/', usersController.createUser)
+  // .post('/', isAdmin, usersController.createUser)
   .patch('/:id', isAdmin, usersController.updateUser)
   .delete('/:id', isAdmin, usersController.deleteUserById);
 

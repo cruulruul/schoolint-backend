@@ -13,5 +13,5 @@ module.exports = {
   templatesRoutes,
   uploadRoutes,
   candidatesListsRoutes,
-  candidatesTagsRoutes
+  candidatesTagsRoutes,
 };

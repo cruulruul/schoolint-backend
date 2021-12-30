@@ -9,12 +9,11 @@ const router = express.Router();
  * templates API endpoints
  */
 router
-  .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
+  // .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
   .use(cors())
   .get('/', templatesController.getTemplates)
   .get('/:id', templatesController.getTemplateById)
   .post('/', templatesController.createTemplates)
-  .patch('/:id', templatesController.updateTemplate)
-  .delete('/:id', isAdmin, templatesController.deleteTemplateById);
+  .delete('/:id', templatesController.deleteTemplateById);
 
 module.exports = router;
