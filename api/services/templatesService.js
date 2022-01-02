@@ -12,8 +12,8 @@ const templatesService = {};
 templatesService.getTemplates = async () => {
   const templates = await db.query(
     `SELECT 
-    T.id, T.name
-  FROM Template T;`,
+      id, name
+    FROM Template;`,
   );
   if (!templates[0]) return false;
   return templates;
@@ -29,12 +29,9 @@ templatesService.getTemplates = async () => {
 templatesService.getTemplateById = async (id) => {
   const template = await db.query(
     `SELECT 
-      T.id, T.name , CONCAT('["', REPLACE(GROUP_CONCAT(TF.name), ',', '","'), '"]') as fields
-    FROM Template T
-    INNER JOIN TemplateFields TF
-      ON T.id = TF.Template_id
-    WHERE T.id = ?
-    GROUP BY T.id;`,
+      id, name
+    FROM Template
+    WHERE id = ?;`,
     [id],
   );
   if (!template[0]) return false;
@@ -74,11 +71,20 @@ templatesService.createTemplates = async (newTemplate) => {
     newTemplate.name,
   ]);
   const newTemplateId = result.insertId;
-  newTemplate.fields.forEach(async (element) => {
+  Object.keys(newTemplate.values).forEach(async (key) => {
+    console.log(key);
     result = await db.query(
-      'INSERT INTO TemplateFields (Template_id, name) VALUES (?, ?);',
-      [newTemplateId, element],
+      'INSERT INTO TemplateSheet (Template_id, name) values (?,?)',
+      [newTemplateId, key],
     );
+    const sheetId = result.insertId;
+    const fieldsArray = newTemplate.values[key];
+    fieldsArray.forEach(async (name) => {
+      result = await db.query(
+        'INSERT INTO TemplateFields (TemplateSheet_id, name) VALUES (?, ?);',
+        [sheetId, name],
+      );
+    });
   });
   return newTemplateId;
 };
@@ -91,7 +97,19 @@ templatesService.createTemplates = async (newTemplate) => {
  * On success return true.
  */
 templatesService.deleteTemplateById = async (id) => {
-  await db.query('DELETE FROM TemplateFields WHERE Template_id = ?', [id]);
+  // Get the TemplateSheed_id's
+  const sheetIdArray = await db.query(
+    'SELECT id FROM TemplateSheet WHERE Template_id = ?',
+    [id],
+  );
+  console.log(sheetIdArray);
+  sheetIdArray.forEach(async (element) => {
+    console.log(element);
+    await db.query('DELETE FROM TemplateFields WHERE TemplateSheet_id = ?', [
+      element.id,
+    ]);
+  });
+  await db.query('DELETE FROM TemplateSheet WHERE Template_id = ?', [id]);
   const result = await db.query('DELETE FROM Template WHERE id = ?', [id]);
   if (result.affectedRows === 1) {
     return true;

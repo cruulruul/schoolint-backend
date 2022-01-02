@@ -65,7 +65,16 @@ templatesController.getTemplateById = async (req, res) => {
       error: `No template found with id: ${id}`,
     });
   }
-  template.fields = JSON.parse(template.fields);
+  const idFieldsArray = {};
+  const fields = await templatesService.getSheetsFieldsByTemplateId(id);
+  fields.forEach((element) => {
+    const key = element;
+    const { name } = key;
+    const fieldsData = key.fields;
+    if (!idFieldsArray[id]) idFieldsArray[id] = {};
+    idFieldsArray[id][name] = JSON.parse(fieldsData);
+  });
+  template.values = idFieldsArray[id];
   return res.status(200).json({
     template,
   });
@@ -83,15 +92,15 @@ templatesController.getTemplateById = async (req, res) => {
  * On success, returns JSON with new Id.
  */
 templatesController.createTemplates = async (req, res) => {
-  const { name, fields } = req.body;
-  if (!name || !fields) {
+  const { name, values } = req.body;
+  if (!name || !values) {
     return res.status(400).json({
       error: 'Required data is missing',
     });
   }
   const template = {
     name,
-    fields,
+    values,
   };
   const id = await templatesService.createTemplates(template);
   if (!id) {
