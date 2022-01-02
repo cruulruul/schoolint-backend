@@ -72,7 +72,6 @@ templatesService.createTemplates = async (newTemplate) => {
   ]);
   const newTemplateId = result.insertId;
   Object.keys(newTemplate.values).forEach(async (key) => {
-    console.log(key);
     result = await db.query(
       'INSERT INTO TemplateSheet (Template_id, name) values (?,?)',
       [newTemplateId, key],
@@ -102,9 +101,7 @@ templatesService.deleteTemplateById = async (id) => {
     'SELECT id FROM TemplateSheet WHERE Template_id = ?',
     [id],
   );
-  console.log(sheetIdArray);
   sheetIdArray.forEach(async (element) => {
-    console.log(element);
     await db.query('DELETE FROM TemplateFields WHERE TemplateSheet_id = ?', [
       element.id,
     ]);
