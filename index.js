@@ -10,6 +10,7 @@ const {
   templatesRoutes,
   candidatesListsRoutes,
   candidatesTagsRoutes,
+  coursesRoutes,
 } = require('./api/routes');
 
 global.__basedir = __dirname;
@@ -22,6 +23,7 @@ app.use(express.json());
 // Routes
 app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
+app.use('/courses', coursesRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/results', resultsRoutes);
 app.use('/templates', templatesRoutes);
