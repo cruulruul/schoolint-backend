@@ -108,7 +108,7 @@ templatesController.createTemplates = async (req, res) => {
       error: 'Unable to insert the template into the database',
     });
   }
-  return res.status(200).json({
+  return res.status(201).json({
     id,
   });
 };
