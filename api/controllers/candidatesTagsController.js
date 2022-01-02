@@ -1,4 +1,4 @@
-const { candidatesTagsService } = require('../services');
+const { candidatesTagsService, coursesService } = require('../services');
 
 const candidatesTagsController = {};
 
@@ -42,9 +42,12 @@ candidatesTagsController.createTag = async (req, res) => {
     res.status(400).json('Required data missing');
   }
 
-  //
-  // Check valid course (occurs here after the course endpoint is created)
-  //
+  const validCourse = await coursesService.getCourseById(courseId);
+  if (!validCourse) {
+    return res.status(404).json({
+      error: `Course with id, ${courseId}, does not exist in the database`,
+    });
+  }
 
   const existingTag = await candidatesTagsService.getTagByName(name, courseId);
   if (existingTag) {

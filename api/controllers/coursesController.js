@@ -1,4 +1,4 @@
-const { coursesService } = require('../services');
+const { coursesService, candidatesTagsService } = require('../services');
 
 const coursesController = {};
 
@@ -81,6 +81,14 @@ coursesController.deleteCourseById = async (req, res) => {
       error: `No course found with id: ${id}`,
     });
   }
+
+  const usedByTags = await candidatesTagsService.getTagsByCourseId(id);
+  if (usedByTags[0]) {
+    return res.status(400).json({
+      error: 'Unable to delete the course, used by tags!',
+    });
+  }
+
   const success = await coursesService.deleteCourseById(id);
   if (!success) {
     return res.status(500).json({
