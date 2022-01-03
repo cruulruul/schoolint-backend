@@ -16,46 +16,70 @@ candidatesListsController.getAllCandidatesLists = (req, res) => {
 
 candidatesListsController.uploadList = async (req, res) => {
   try {
+    // Uploads the file and adds form-data to req
     await upload(req, res);
 
+    // Check for necessary form-data values and mimetype
+    // File related
     if (req.file === undefined) {
-      return res.status(400).send({ error: 'Please upload a file!' });
+      return res.status(400).send({ error: 'File missing' });
     }
-
+    const fileName = req.file.originalname;
+    if (!fileName) {
+      return res.status(500).send({ error: 'File not found' });
+    }
+    // Check filetype (xls, xlsx)
+    const fileTypes = ['xls', 'xlsx'];
+    if (!fileTypes.includes(fileName.substring(fileName.indexOf('.') + 1))) {
+      // delete the file
+      fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
+      return res
+        .status(406)
+        .send({ error: `Wrong file type, allowed: ${fileTypes}` });
+    }
+    // Body related
     const templateId = parseInt(req.body.templateId, 10);
-
-    if (!templateId) {
-      return res.status(400).send({ error: 'Please choose a template!' });
+    const listYear = parseInt(req.body.year, 10);
+    if (!listYear) {
+      return res.status(400).send({ error: 'Year missing' });
     }
-
-    if (!templatesService.getTemplateById(templateId)) {
+    if (!templateId) {
+      return res.status(400).send({ error: 'TemplateId missing' });
+    }
+    // Check does the template exists
+    const template = await templatesService.getTemplateById(templateId);
+    if (!template) {
       return res
         .status(404)
         .send({ error: `Template with id, ${templateId}, not found!` });
     }
 
-    const jsonData = await excelParser(req.file.originalname);
+    // Converts the excel file to JSON and deletes the temporary file
+    const jsonData = await excelParser(fileName);
+    fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
+    if (!jsonData) {
+      return res.status(500).send({
+        error: 'Something went wrong while parsing the excel file',
+      });
+    }
 
-    fs.unlinkSync(`${config.baseDir}/uploads/${req.file.originalname}`);
-
-    const validation = await templatesService.validateJson(
-      templateId,
-      jsonData,
-    );
+    // Validates the data against the template
+    const validation = await templatesService.validateJson(template, jsonData);
     if (validation.error) {
-      return res.status(409).json({
+      return res.status(406).json({
         error: validation.error,
       });
     }
 
-    const importDatabase = candidatesService.createCandidates(jsonData);
+    // Passes the data to service for db insert
+    const importDatabase = await candidatesService.createCandidates(jsonData);
     if (importDatabase.error) {
-      return res.status(409).json({
+      return res.status(500).json({
         error: importDatabase.error,
       });
     }
   } catch (err) {
-    res.status(500).send({
+    return res.status(500).send({
       error: `Could not import the list: ${err}`,
     });
   }

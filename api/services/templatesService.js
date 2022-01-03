@@ -147,31 +147,57 @@ templatesService.deleteTemplateById = async (id) => {
   return false;
 };
 
-templatesService.validateJson = async (templateId, data) => {
-  const result = await templatesService.getTemplateById(templateId);
-  const template = result.values;
+/**
+ * Validates the data, compares with the template (sheet names, collumn names).
+ * Checks the cells values (not allowed empty or spaces)
+ * @param {json} templateObject
+ * @param {json} data
+ * @returns {(boolean|Array)}
+ * On success: returns true
+ * On error: returns error message JSON
+ */
+templatesService.validateJson = async (templateObject, data) => {
+  const template = templateObject.values;
   const templateSheets = Object.keys(template);
   const importSheets = Object.keys(data);
   let importSheetHeaders = '';
+  let skimmedTemplateHeaders = '';
 
+  // Compare template and imported excel sheet names
   if (templateSheets.toString() !== importSheets.toString()) {
     return {
-      error: `Sheet names not matching! template: ${templateSheets}  importSheets: ${importSheets}`,
+      error: `Sheet names not matching! template: ${templateSheets} :: importSheets: ${importSheets}`,
     };
   }
 
+  // Compare template and imported excel sheet headers
   for (let i = 0; i < templateSheets.length; i += 1) {
     const templateSheetHeaders = template[Object.keys(template)[0]];
+    skimmedTemplateHeaders = [...templateSheetHeaders];
     importSheetHeaders = Object.keys(data[Object.keys(data)[i]].shift());
-    templateSheetHeaders.sort();
+
+    for (
+      let counter = 0;
+      counter < skimmedTemplateHeaders.length;
+      counter += 1
+    ) {
+      if (skimmedTemplateHeaders[counter].includes(':')) {
+        skimmedTemplateHeaders[counter] = skimmedTemplateHeaders[
+          counter
+        ].substring(skimmedTemplateHeaders[counter].indexOf(':') + 1);
+      }
+    }
+
+    skimmedTemplateHeaders.sort();
     importSheetHeaders.sort();
-    if (templateSheetHeaders.toString() !== importSheetHeaders.toString()) {
+    if (skimmedTemplateHeaders.toString() !== importSheetHeaders.toString()) {
       return {
-        error: `Sheet headers not matching! templateSheetHeaders: ${templateSheetHeaders}, : dataSheetsHeaders: ${importSheetHeaders}`,
+        error: `Sheet headers not matching! templateSheetHeaders: ${skimmedTemplateHeaders} :: dataSheetsHeaders: ${importSheetHeaders}`,
       };
     }
   }
 
+  // Check row data for empty values
   for (let i = 0; i < importSheets.length; i += 1) {
     const sheetData = data[Object.keys(data)[i]];
     for (let row = 0; row < sheetData.length; row += 1) {
@@ -193,6 +219,12 @@ templatesService.validateJson = async (templateId, data) => {
   return true;
 };
 
+/**
+ * Helper function to detect row empty values
+ * @param {array} data
+ * @param {array} headers
+ * @returns {boolean}
+ */
 templatesService.checkIsEmpty = (data, headers) => {
   for (let i = 0; i < headers.length; i += 1) {
     const value = data[headers[i]];
