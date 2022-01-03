@@ -1,5 +1,6 @@
 /* eslint-disable operator-linebreak */
 const db = require('../../db');
+const { templatesController } = require('../controllers');
 
 const templatesService = {};
 
@@ -16,6 +17,29 @@ templatesService.getTemplates = async () => {
     FROM Template;`,
   );
   if (!templates[0]) return false;
+
+  const idArray = [];
+
+  templates.forEach((element) => {
+    const key = element;
+    idArray.push(key.id);
+  });
+
+  const idFieldsArray = {};
+  // eslint-disable-next-line no-restricted-syntax
+  for (const id of idArray) {
+    // eslint-disable-next-line no-await-in-loop
+    const fields = await templatesService.getSheetsFieldsByTemplateId(id);
+    fields.forEach((element) => {
+      const key = element;
+      const { name } = key;
+      const fieldsData = key.fields;
+      if (!idFieldsArray[id]) idFieldsArray[id] = {};
+      idFieldsArray[id][name] = JSON.parse(fieldsData);
+    });
+    const template = templates.find((element) => element.id === id);
+    template.values = idFieldsArray[id];
+  }
   return templates;
 };
 
@@ -35,6 +59,16 @@ templatesService.getTemplateById = async (id) => {
     [id],
   );
   if (!template[0]) return false;
+  const idFieldsArray = {};
+  const fields = await templatesService.getSheetsFieldsByTemplateId(id);
+  fields.forEach((element) => {
+    const key = element;
+    const { name } = key;
+    const fieldsData = key.fields;
+    if (!idFieldsArray[id]) idFieldsArray[id] = {};
+    idFieldsArray[id][name] = JSON.parse(fieldsData);
+  });
+  template[0].values = idFieldsArray[id];
   return template[0];
 };
 
@@ -115,7 +149,8 @@ templatesService.deleteTemplateById = async (id) => {
 };
 
 templatesService.validateJson = async (templateId, data) => {
-  const template = templatesService.getTemplateById(templateId).values;
+  const temp = templatesController.getTemplateById(templateId);
+  const template = temp.values;
   const templateSheets = Object.keys(template);
   const importSheets = Object.keys(data);
   let importSheetHeaders = '';

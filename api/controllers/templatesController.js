@@ -19,29 +19,6 @@ templatesController.getTemplates = async (req, res) => {
       error: 'No templates found',
     });
   }
-
-  const idArray = [];
-
-  templates.forEach((element) => {
-    const key = element;
-    idArray.push(key.id);
-  });
-
-  const idFieldsArray = {};
-  // eslint-disable-next-line no-restricted-syntax
-  for (const id of idArray) {
-    // eslint-disable-next-line no-await-in-loop
-    const fields = await templatesService.getSheetsFieldsByTemplateId(id);
-    fields.forEach((element) => {
-      const key = element;
-      const { name } = key;
-      const fieldsData = key.fields;
-      if (!idFieldsArray[id]) idFieldsArray[id] = {};
-      idFieldsArray[id][name] = JSON.parse(fieldsData);
-    });
-    const template = templates.find((element) => element.id === id);
-    template.values = idFieldsArray[id];
-  }
   return res.status(200).json({
     templates,
   });
@@ -65,16 +42,6 @@ templatesController.getTemplateById = async (req, res) => {
       error: `No template found with id: ${id}`,
     });
   }
-  const idFieldsArray = {};
-  const fields = await templatesService.getSheetsFieldsByTemplateId(id);
-  fields.forEach((element) => {
-    const key = element;
-    const { name } = key;
-    const fieldsData = key.fields;
-    if (!idFieldsArray[id]) idFieldsArray[id] = {};
-    idFieldsArray[id][name] = JSON.parse(fieldsData);
-  });
-  template.values = idFieldsArray[id];
   return res.status(200).json({
     template,
   });
