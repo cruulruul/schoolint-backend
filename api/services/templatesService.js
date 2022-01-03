@@ -1,6 +1,5 @@
 /* eslint-disable operator-linebreak */
 const db = require('../../db');
-const { templatesController } = require('../controllers');
 
 const templatesService = {};
 
@@ -126,7 +125,7 @@ templatesService.createTemplates = async (newTemplate) => {
  * Delete query, remove given template and it's fields
  * @param {int} id
  * @returns {boolean}
- * If rowcount is not 1, return false.
+ * If rowcount is not greater than 1, return false.
  * On success return true.
  */
 templatesService.deleteTemplateById = async (id) => {
@@ -149,34 +148,34 @@ templatesService.deleteTemplateById = async (id) => {
 };
 
 templatesService.validateJson = async (templateId, data) => {
-  const temp = templatesController.getTemplateById(templateId);
-  const template = temp.values;
+  const result = await templatesService.getTemplateById(templateId);
+  const template = result.values;
   const templateSheets = Object.keys(template);
   const importSheets = Object.keys(data);
   let importSheetHeaders = '';
 
   if (templateSheets.toString() !== importSheets.toString()) {
     return {
-      error: `Sheet names not matching template: ${templateSheets}  importSheets: ${importSheets}`,
+      error: `Sheet names not matching! template: ${templateSheets}  importSheets: ${importSheets}`,
     };
   }
 
   for (let i = 0; i < templateSheets.length; i += 1) {
-    const templateSheetHeaders = template[Object.keys(template)[0]].fields;
+    const templateSheetHeaders = template[Object.keys(template)[0]];
     importSheetHeaders = Object.keys(data[Object.keys(data)[i]].shift());
     templateSheetHeaders.sort();
     importSheetHeaders.sort();
     if (templateSheetHeaders.toString() !== importSheetHeaders.toString()) {
       return {
-        error: `Sheet headers not matching templateSheetHeaders: ${templateSheetHeaders}, : dataSheetsHeaders: ${importSheetHeaders}`,
+        error: `Sheet headers not matching! templateSheetHeaders: ${templateSheetHeaders}, : dataSheetsHeaders: ${importSheetHeaders}`,
       };
     }
   }
 
   for (let i = 0; i < importSheets.length; i += 1) {
     const sheetData = data[Object.keys(data)[i]];
-    for (let row = 0; row < sheetData.length - 1; row += 1) {
-      const rowData = sheetData[row + 1];
+    for (let row = 0; row < sheetData.length; row += 1) {
+      const rowData = sheetData[row];
       const rowHeaders = Object.keys(rowData);
       if (
         templatesService.checkIsEmpty(rowData, importSheetHeaders) ||
@@ -184,7 +183,7 @@ templatesService.validateJson = async (templateId, data) => {
       ) {
         return {
           error: `Import failed, error on row ${
-            row + 1
+            row + 2
           }, value is spaces or missing!`,
         };
       }
