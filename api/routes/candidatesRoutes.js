@@ -13,7 +13,6 @@ router
   .use(cors())
   .get('/', candidatesController.getCandidates)
   .get('/:id', candidatesController.getCandidateById)
-  .post('/', candidatesController.createCandidates)
   .patch('/:id', candidatesController.updateCandidate)
   .delete('/:id', isAdmin, candidatesController.deleteCandidateById);
 

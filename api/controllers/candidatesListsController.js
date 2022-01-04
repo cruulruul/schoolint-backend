@@ -3,6 +3,7 @@ const {
   candidatesListsService,
   templatesService,
   candidatesService,
+  coursesService,
 } = require('../services');
 const { upload, excelParser } = require('../middlewares');
 const config = require('../../config');
@@ -14,6 +15,12 @@ candidatesListsController.getAllCandidatesLists = (req, res) => {
   res.status(200).json({ candidatesLists });
 };
 
+/**
+ * Description
+ * @param {json} req
+ * @param {any} res
+ * @returns {any}
+ */
 candidatesListsController.uploadList = async (req, res) => {
   try {
     // Uploads the file and adds form-data to req
@@ -37,15 +44,28 @@ candidatesListsController.uploadList = async (req, res) => {
         .status(406)
         .send({ error: `Wrong file type, allowed: ${fileTypes}` });
     }
-    // Body related
+    // Check req.body related
+    const courseId = parseInt(req.body.courseId, 10);
     const templateId = parseInt(req.body.templateId, 10);
     const listYear = parseInt(req.body.year, 10);
-    if (!listYear) {
-      return res.status(400).send({ error: 'Year missing' });
+    if (!courseId) {
+      return res.status(400).send({ error: 'CourseId missing' });
     }
     if (!templateId) {
       return res.status(400).send({ error: 'TemplateId missing' });
     }
+    if (!listYear) {
+      return res.status(400).send({ error: 'Year missing' });
+    }
+
+    // Check does the course exists
+    const course = await coursesService.getCourseById(courseId);
+    if (!course) {
+      return res
+        .status(404)
+        .send({ error: `Course with id, ${courseId}, not found!` });
+    }
+
     // Check does the template exists
     const template = await templatesService.getTemplateById(templateId);
     if (!template) {
@@ -72,7 +92,12 @@ candidatesListsController.uploadList = async (req, res) => {
     }
 
     // Passes the data to service for db insert
-    const importDatabase = await candidatesService.createCandidates(jsonData);
+    const importDatabase = await candidatesService.createCandidates(
+      jsonData,
+      template,
+      courseId,
+      listYear,
+    );
     if (importDatabase.error) {
       return res.status(500).json({
         error: importDatabase.error,

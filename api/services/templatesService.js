@@ -160,11 +160,15 @@ templatesService.validateJson = async (templateObject, data) => {
   const template = templateObject.values;
   const templateSheets = Object.keys(template);
   const importSheets = Object.keys(data);
-  let importSheetHeaders = '';
-  let skimmedTemplateHeaders = '';
+  let templateSheetHeaders = [];
+  let importSheetHeaders = [];
+  let skimmedTemplateHeaders = [];
 
   // Compare template and imported excel sheet names
-  if (templateSheets.toString() !== importSheets.toString()) {
+  if (
+    templateSheets.toString().toLowerCase() !==
+    importSheets.toString().toLowerCase()
+  ) {
     return {
       error: `Sheet names not matching! template: ${templateSheets} :: importSheets: ${importSheets}`,
     };
@@ -172,7 +176,7 @@ templatesService.validateJson = async (templateObject, data) => {
 
   // Compare template and imported excel sheet headers
   for (let i = 0; i < templateSheets.length; i += 1) {
-    const templateSheetHeaders = template[Object.keys(template)[0]];
+    templateSheetHeaders = template[Object.keys(template)[0]];
     skimmedTemplateHeaders = [...templateSheetHeaders];
     importSheetHeaders = Object.keys(data[Object.keys(data)[i]].shift());
 
@@ -204,7 +208,11 @@ templatesService.validateJson = async (templateObject, data) => {
       const rowData = sheetData[row];
       const rowHeaders = Object.keys(rowData);
       if (
-        templatesService.checkIsEmpty(rowData, importSheetHeaders) ||
+        templatesService.checkIsEmpty(
+          rowData,
+          importSheetHeaders,
+          templateSheetHeaders,
+        ) ||
         rowHeaders.sort().toString() !== importSheetHeaders.sort().toString()
       ) {
         return {
@@ -225,15 +233,22 @@ templatesService.validateJson = async (templateObject, data) => {
  * @param {array} headers
  * @returns {boolean}
  */
-templatesService.checkIsEmpty = (data, headers) => {
+templatesService.checkIsEmpty = (data, headers, templateHeaders) => {
   for (let i = 0; i < headers.length; i += 1) {
-    const value = data[headers[i]];
-    if (
-      value === null ||
-      value === undefined ||
-      value.toString().match(/^ *$/) !== null
-    ) {
-      return true;
+    // Check is allowed to be empty
+    const allowedEmpty = templateHeaders.find(
+      (element) => element > headers[i],
+    );
+
+    if (!allowedEmpty) {
+      const value = data[headers[i]];
+      if (
+        value === null ||
+        value === undefined ||
+        value.toString().match(/^ *$/) !== null
+      ) {
+        return true;
+      }
     }
   }
   return false;

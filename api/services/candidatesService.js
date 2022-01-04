@@ -18,7 +18,12 @@ candidatesService.getCandidateById = (id) => {
 };
 
 // Creates new candidates
-candidatesService.createCandidates = (jsonData) => {
+candidatesService.createCandidates = (
+  jsonData,
+  template,
+  courseId,
+  listYear,
+) => {
   const sheetData = jsonData[Object.keys(jsonData)[0]];
   for (let i = 0; i < sheetData.length; i += 1) {
     sheetData[Object.keys(sheetData)[i]].id = database.candidates.length + 1;
