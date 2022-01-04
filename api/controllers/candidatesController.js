@@ -36,21 +36,6 @@ candidatesController.getCandidateById = (req, res) => {
 };
 
 /**
- * mock/test
- */
-candidatesController.createCandidates = (req, res) => {
-  const data = candidatesService.createCandidates();
-  if (!data) {
-    return res.status(409).json({
-      error: 'error',
-    });
-  }
-  return res.status(200).json({
-    message: 'success',
-  });
-};
-
-/**
  * Update candidate
  * PATCH - /candidate/:id
  * Required values: id, firstName OR lastName OR personalId
