@@ -1,22 +1,101 @@
 const coursesService = require('./coursesService');
+const resultsService = require('./resultsService');
 const db = require('../../db');
-const database = require('../../database');
 
 const candidatesService = {};
 
-// Returns list of candidates
-candidatesService.getCandidates = () => {
-  const { candidates } = database;
+/**
+ * Corresponding candidates query from the database.
+ * If admin, returns all active list candidates.
+ * @param {id} userId
+ * @param {string} userRole
+ * @returns {json}
+ * If no records found returns empty JSON.
+ */
+candidatesService.getCandidates = async (userId, userRole) => {
+  // TODO Skim the query, no need so much data :S
+  let sqlString = `
+    SELECT 
+    c.id,
+      (CONCAT(co.name, RIGHT(cy.year,char_length(cy.year)-2))) as specialityCode,
+      co.name as courseName,
+      cy.year,
+      c.first_name as firstName,
+      c.last_name as lastName,
+      c.email,
+      c.personal_id as personalId,
+      c.address as residence,
+      c.phone as phoneNumber,
+      c.present,
+      (CONCAT(IFNULL(c.notes,""), 
+      IFNULL(CONCAT("\nexam1:", c.exam1),""), 
+          IFNULL(CONCAT("\nexam2:", c.exam2),""), 
+          IFNULL(CONCAT("\nexam3:", c.exam3),""), 
+          IFNULL(CONCAT("\nexam4:", c.exam4),""))) as notes
+    FROM Candidate c
+    INNER JOIN CourseYear cy on c.CourseYear_id=cy.id
+    INNER JOIN Course co on cy.Course_id=co.id
+  `;
+  if (userRole === 'Admin') {
+    sqlString += 'WHERE cy.enabled = 1;';
+  } else {
+    sqlString += `INNER JOIN (SELECT id, Course_id FROM User) u on co.id=u.Course_id
+    WHERE cy.enabled = 1
+    and u.id=${userId};`;
+  }
+  const candidates = await db.query(sqlString);
   return candidates;
 };
 
-// Find candidate by id. Returns candidate if found or false.
-candidatesService.getCandidateById = (id) => {
-  const candidate = database.candidates.find((element) => element.id === id);
-  if (candidate) {
-    return candidate;
+/**
+ * Single candidate query from the database by id.
+ * @param {int} id
+ * @param {int} userId
+ * @param {string} userRole
+ * @returns {(json|boolean)}
+ * If no records found returns false
+ * On success returns JSON.
+ */
+candidatesService.getCandidateById = async (id, userId, userRole) => {
+  let sqlString = `
+    SELECT 
+    c.id,
+      (CONCAT(co.name, RIGHT(cy.year,char_length(cy.year)-2))) as specialityCode,
+      co.name as courseName,
+      cy.year,
+      c.first_name as firstName,
+      c.last_name as lastName,
+      c.email,
+      c.personal_id as personalId,
+      c.address as residence,
+      c.phone as phoneNumber,
+      c.present,
+      (CONCAT(IFNULL(c.notes,""), 
+      IFNULL(CONCAT("\nexam1:", c.exam1),""), 
+          IFNULL(CONCAT("\nexam2:", c.exam2),""), 
+          IFNULL(CONCAT("\nexam3:", c.exam3),""), 
+          IFNULL(CONCAT("\nexam4:", c.exam4),""))) as notes
+    FROM Candidate c
+    INNER JOIN CourseYear cy on c.CourseYear_id=cy.id
+    INNER JOIN Course co on cy.Course_id=co.id
+  `;
+  if (userRole === 'Admin') {
+    sqlString += `WHERE cy.enabled = 1 and c.id = ${id};`;
+  } else {
+    sqlString += `INNER JOIN (SELECT id, Course_id FROM User) u on co.id=u.Course_id
+    WHERE cy.enabled = 1
+    and u.id=${userId} and c.id=${id};`;
   }
-  return false;
+  const candidate = await db.query(sqlString);
+
+  // Get candidate scores
+  if (candidate[0]) {
+    const results = await resultsService.getResultById(id);
+    Object.assign(candidate[0], results);
+  } else {
+    return false;
+  }
+  return candidate[0];
 };
 
 /**
@@ -68,41 +147,25 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
   return true;
 };
 
-// updates candidate
+/**
+ * Updates the candidate with given id,
+ * @param {json} list
+ * @returns {boolean}
+ * If no rows were updated returns false, on success returns true
+ */
 candidatesService.updateCandidate = async (candidate) => {
-  const index = database.candidates.findIndex(
-    (element) => element.id === candidate.id,
-  );
-  if (candidate.firstName) {
-    database.candidates[index].firstName = candidate.firstName;
-  }
-  if (candidate.lastName) {
-    database.candidates[index].lastName = candidate.lastName;
-  }
-  if (candidate.email) {
-    database.candidates[index].email = candidate.email;
-  }
-  if (candidate.personalId) {
-    database.candidates[index].personalId = candidate.personalId;
-  }
-  if (candidate.notes) {
-    database.candidates[index].notes = candidate.notes;
-  }
+  const candidateToUpdate = {};
   if (candidate.present != null) {
-    database.candidates[index].present = candidate.present;
+    candidateToUpdate.present = candidate.present ? 1 : 0;
   }
-  if (candidate.comments) {
-    database.candidates[index].comments = candidate.comments;
+  const result = await db.query('UPDATE Candidate SET ? WHERE id = ?', [
+    candidateToUpdate,
+    candidate.id,
+  ]);
+  if (result.affectedRows === 1) {
+    return true;
   }
-  return true;
-};
-
-// Deletes candidate
-candidatesService.deleteCandidateById = (id) => {
-  const index = database.candidates.findIndex((element) => element.id === id);
-  // Remove candidate from 'database'
-  database.candidates.splice(index, 1);
-  return true;
+  return false;
 };
 
 module.exports = candidatesService;

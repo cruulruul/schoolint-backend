@@ -1,16 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const { uploadController } = require('../controllers');
-// const { isLoggedIn } = require('../middlewares');
+const { isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
 /**
- * results API endpoints
+ * Uploads API endpoints
  */
-router
-  // .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
-  .use(cors())
-  .post('/', uploadController.upload);
+router.use(cors()).use(isLoggedIn).post('/', uploadController.upload); // candidateId
+// .delete ('/:id'), uploadController.deleteFile);
 
 module.exports = router;

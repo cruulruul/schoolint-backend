@@ -9,40 +9,33 @@ resultsService.getResults = () => {
 };
 
 // Find result by id. Returns result if found or false.
-resultsService.getResultById = (id) => {
-  const result = database.results.find((element) => element.id === id);
+resultsService.getResultById = async (id) => {
+  const result = {
+    comments: '',
+    room: '',
+    finalScore: '',
+    scores: {
+      kat1: '',
+      kat2: '',
+      kat3: '',
+      kat4: '',
+    },
+    tags: [1, 2, 3],
+    background: null,
+    present: false,
+    // attachments: {
+    //   {
+    // id: 1,
+    // filename: "Pdasdasdasd.jpg",
+    // path: "/uploads/Pdasdasdasd-id.jpg",
+    //   },
+    // }
+  };
+  // const result = database.results.find((element) => element.id === id);
   if (result) {
     return result;
   }
   return false;
-};
-
-// Creates new results
-resultsService.createResults = () => {
-  const result = true;
-  return result;
-};
-
-// updates result
-resultsService.updateResult = async (result) => {
-  const index = database.results.findIndex(
-    (element) => element.id === result.id,
-  );
-  if (result.candidateId) {
-    database.results[index].candidateId = result.candidateId;
-  }
-  if (result.score) {
-    database.results[index].score = result.score;
-  }
-  return true;
-};
-
-// Deletes result
-resultsService.deleteResultById = (id) => {
-  const index = database.results.findIndex((element) => element.id === id);
-  // Remove result from 'database'
-  database.results.splice(index, 1);
-  return true;
 };
 
 module.exports = resultsService;

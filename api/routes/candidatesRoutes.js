@@ -1,19 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const { candidatesController } = require('../controllers');
-const { isAdmin } = require('../middlewares');
+const { isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
 /**
- * candidates API endpoints
+ * Candidates API endpoints
  */
 router
-  // .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
   .use(cors())
+  .use(isLoggedIn)
   .get('/', candidatesController.getCandidates)
   .get('/:id', candidatesController.getCandidateById)
-  .patch('/:id', candidatesController.updateCandidate)
-  .delete('/:id', isAdmin, candidatesController.deleteCandidateById);
+  .patch('/:id', candidatesController.updateCandidate);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const candidatesListsService = {};
 candidatesListsService.getAllCandidatesLists = async () => {
   const candidatesLists = await db.query(`
     SELECT
-      CY.id, CY.year, C.name as listCode, CY.enabled, CY.created
+      CY.id, CY.year, C.name as listCode, C.id as listId, CY.enabled, CY.created
     FROM CourseYear as CY
     INNER JOIN Course C on CY.Course_id=C.id;`);
   return candidatesLists;
@@ -27,7 +27,7 @@ candidatesListsService.getListById = async (id) => {
   const candidatesList = await db.query(
     `
   SELECT
-    CY.id, CY.year, C.name as listCode, CY.enabled, CY.created
+    CY.id, CY.year, C.name as listCode, C.id as listId, CY.enabled, CY.created
   FROM CourseYear as CY
   INNER JOIN Course C on CY.Course_id=C.id
   WHERE CY.id = ?;`,

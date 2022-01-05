@@ -4,8 +4,8 @@ const usersController = {};
 
 /**
  * Returns all users from the database
- * @returns {json} On success returns JSON.
- * On failure returns JSON with error msg and status code 500 otherwise 200 with data
+ * @returns {json} On success returns JSON and status code 200.
+ * On failure returns JSON with error msg and status code 500.
  */
 usersController.getUsers = async (req, res) => {
   try {
@@ -55,7 +55,14 @@ usersController.getUserById = async (req, res) => {
  * On success returns JSON with created user Id and status 200
  */
 usersController.createUser = async (req, res) => {
-  const { firstName, lastName, email, password, courseId, roleId } = req.body;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    specialityCode,
+    roleId,
+  } = req.body;
   if (!firstName || !lastName || !email || !password) {
     return res.status(400).json({
       error: 'Required data is missing.',
@@ -75,7 +82,7 @@ usersController.createUser = async (req, res) => {
       lastName,
       email,
       password,
-      courseId,
+      specialityCode,
       roleId,
     };
 

@@ -1,16 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const { coursesController } = require('../controllers');
-// const { isAdmin, isLoggedin } = require('../middlewares');
+const { isAdmin, isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
+/**
+ * Courses tags API endpoints
+ */
 router
-  // .use(isLoggedIn)
   .use(cors())
-  .get('/', coursesController.getAllCourses)
-  .get('/:id', coursesController.getCourseById)
-  .post('/', coursesController.createCourse)
-  .delete('/:id', coursesController.deleteCourseById);
+  .use(isLoggedIn)
+  .get('/', isAdmin, coursesController.getAllCourses)
+  .get('/:id', isAdmin, coursesController.getCourseById)
+  .post('/', isAdmin, coursesController.createCourse)
+  .delete('/:id', isAdmin, coursesController.deleteCourseById);
 
 module.exports = router;

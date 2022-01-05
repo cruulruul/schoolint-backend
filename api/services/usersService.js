@@ -70,7 +70,7 @@ usersService.createUser = async (newUser) => {
     password: hash,
     email: newUser.email,
     UserRole_id: newUser.roledId ? newUser.roledId : 2,
-    Course_id: newUser.Course_id,
+    Course_id: newUser.specialityCode,
   };
   const result = await db.query('INSERT INTO User SET ?', [user]);
   return { id: result.insertId };
