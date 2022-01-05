@@ -11,7 +11,7 @@ const candidatesController = {};
  */
 candidatesController.getCandidates = (req, res) => {
   const candidates = candidatesService.getCandidates();
-  res.status(200).json({ candidates });
+  return res.status(200).json({ candidates });
 };
 
 /**
@@ -57,13 +57,13 @@ candidatesController.updateCandidate = async (req, res) => {
   } = req.body;
 
   if (!id && !(firstName || lastName || email || personalId, present)) {
-    res.status(400).json({
+    return res.status(400).json({
       error: 'Required data is missing',
     });
   }
   const candidate = candidatesService.getCandidateById(id);
   if (!candidate) {
-    res.status(400).json({
+    return res.status(404).json({
       error: `No candidate found with id: ${id}`,
     });
   }

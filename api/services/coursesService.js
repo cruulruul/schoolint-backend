@@ -66,6 +66,20 @@ coursesService.createCourse = async (name) => {
 };
 
 /**
+ * Insert query, new course year into database
+ * @param {int} courseId
+ * @param {int} year
+ * @returns {int} On success: returns inserted row id
+ */
+coursesService.createCourseYear = async (courseId, year) => {
+  const result = await db.query(
+    'INSERT INTO CourseYear (Course_id, year) VALUES (?,?);',
+    [courseId, year],
+  );
+  return result.insertId;
+};
+
+/**
  * Delete query, remove course by id
  * @param {int} id
  * @returns {boolean}

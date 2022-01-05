@@ -10,7 +10,7 @@ const candidatesTagsController = {};
  */
 candidatesTagsController.getAllCandidatesTags = async (req, res) => {
   const tags = await candidatesTagsService.getAllCandidatesTags();
-  res.status(200).json({ tags });
+  return res.status(200).json({ tags });
 };
 
 /**
@@ -23,7 +23,7 @@ candidatesTagsController.getAllCandidatesTags = async (req, res) => {
 candidatesTagsController.getTagsByCourseId = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const tags = await candidatesTagsService.getTagsByCourseId(id);
-  res.status(200).json({ tags });
+  return res.status(200).json({ tags });
 };
 
 /**
@@ -39,7 +39,7 @@ candidatesTagsController.getTagsByCourseId = async (req, res) => {
 candidatesTagsController.createTag = async (req, res) => {
   const { name, courseId } = req.body;
   if (!name || !courseId) {
-    res.status(400).json('Required data missing');
+    return res.status(400).json('Required data missing');
   }
 
   const validCourse = await coursesService.getCourseById(courseId);

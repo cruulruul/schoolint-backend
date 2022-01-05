@@ -10,9 +10,45 @@ const config = require('../../config');
 
 const candidatesListsController = {};
 
-candidatesListsController.getAllCandidatesLists = (req, res) => {
-  const candidatesLists = candidatesListsService.getAllCandidatesLists();
+candidatesListsController.getAllCandidatesLists = async (req, res) => {
+  const candidatesLists = await candidatesListsService.getAllCandidatesLists();
   res.status(200).json({ candidatesLists });
+};
+
+candidatesListsController.updateCandidateListById = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { enabled } = req.body;
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+  if (enabled === undefined && enabled > 1) {
+    return res.status(400).json({
+      error: 'Required data (enabled) is missing or bit (0/1)',
+    });
+  }
+  const list = await candidatesListsService.getListById(id);
+  if (!list) {
+    return res.status(404).json({
+      error: `No list found with id: ${id}`,
+    });
+  }
+  const listToUpdate = {
+    id,
+    enabled,
+  };
+  const success = await candidatesListsService.updateCandidateListById(
+    listToUpdate,
+  );
+  if (!success) {
+    return res.status(500).json({
+      error: 'Something went wrong while updating the list status',
+    });
+  }
+  return res.status(200).json({
+    success: true,
+  });
 };
 
 /**
@@ -75,7 +111,7 @@ candidatesListsController.uploadList = async (req, res) => {
     }
 
     // Converts the excel file to JSON and deletes the temporary file
-    const jsonData = await excelParser(fileName);
+    let jsonData = await excelParser(fileName);
     fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
     if (!jsonData) {
       return res.status(500).send({
@@ -91,10 +127,12 @@ candidatesListsController.uploadList = async (req, res) => {
       });
     }
 
+    // Swap the JSON object key's to template ones
+    jsonData = await candidatesListsService.changeJsonKeys(template, jsonData);
+
     // Passes the data to service for db insert
     const importDatabase = await candidatesService.createCandidates(
       jsonData,
-      template,
       courseId,
       listYear,
     );
@@ -109,7 +147,7 @@ candidatesListsController.uploadList = async (req, res) => {
     });
   }
   return res.status(201).send({
-    message: 'Imported the list successfully',
+    success: 'Imported the list successfully',
   });
 };
 

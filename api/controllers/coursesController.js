@@ -46,7 +46,7 @@ coursesController.getCourseById = async (req, res) => {
 coursesController.createCourse = async (req, res) => {
   const { name } = req.body;
   if (!name) {
-    res.status(400).json('Required data "name" is missing');
+    return res.status(400).json('Required data "name" is missing');
   }
 
   const existingCourse = await coursesService.getCourseByName(name);

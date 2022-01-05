@@ -27,11 +27,11 @@ usersService.getUserById = async (id) => {
     `SELECT
       U.id, U.first_name as firstName, U.last_name as lastName, U.email, UR.name as role, C.name as specialityCode
     FROM
-      schoolint.User U
+      User U
     INNER JOIN
-      schoolint.UserRole UR on U.UserRole_id=UR.id
+      UserRole UR on U.UserRole_id=UR.id
     LEFT JOIN
-      schoolint.Course C on U.Course_id=C.id
+      Course C on U.Course_id=C.id
     WHERE
       U.id = ? and
       U.deleted=0;`,
@@ -57,7 +57,7 @@ usersService.createUser = async (newUser) => {
     UserRole_id: newUser.roledId ? newUser.roledId : 2,
     Course_id: newUser.Course_id,
   };
-  const result = await db.query('INSERT INTO `User` SET ?', [user]);
+  const result = await db.query('INSERT INTO User SET ?', [user]);
   return { id: result.insertId };
 };
 
@@ -83,8 +83,14 @@ usersService.updateUser = async (user) => {
   if (user.roleId) {
     userToUpdate.UserRole_id = user.roleId;
   }
-  await db.query('UPDATE `User` SET ? WHERE id = ?', [userToUpdate, user.id]);
-  return true;
+  const result = await db.query('UPDATE User SET ? WHERE id = ?', [
+    userToUpdate,
+    user.id,
+  ]);
+  if (result.affectedRows === 1) {
+    return true;
+  }
+  return false;
 };
 
 // Find user by email. Returns user if found or undefined
@@ -109,7 +115,7 @@ usersService.getUserByEmail = async (email) => {
 
 // Deletes user
 usersService.deleteUserById = async (id) => {
-  await db.query('UPDATE `User` SET deleted = 1 WHERE id = ?', [id]);
+  await db.query('UPDATE User SET deleted = 1 WHERE id = ?', [id]);
   return true;
 };
 

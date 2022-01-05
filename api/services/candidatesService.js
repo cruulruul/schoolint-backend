@@ -1,3 +1,5 @@
+const coursesService = require('./coursesService');
+const db = require('../../db');
 const database = require('../../database');
 
 const candidatesService = {};
@@ -17,21 +19,53 @@ candidatesService.getCandidateById = (id) => {
   return false;
 };
 
-// Creates new candidates
-candidatesService.createCandidates = (
-  jsonData,
-  template,
-  courseId,
-  listYear,
-) => {
-  const sheetData = jsonData[Object.keys(jsonData)[0]];
-  for (let i = 0; i < sheetData.length; i += 1) {
-    sheetData[Object.keys(sheetData)[i]].id = database.candidates.length + 1;
+/**
+ * Inserts candidates into database from the generated JSON data
+ * @param {json} jsonData
+ * @param {json} template
+ * @param {int} courseId
+ * @param {int} listYear
+ * @returns {(boolean|json)} On success: returns true, On failure: returns JSON with an error msg
+ */
+candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
+  // Creates the course year record into database.
+  const courseYearId = await coursesService.createCourseYear(
+    courseId,
+    listYear,
+  );
+  if (!courseYearId) {
+    return {
+      error: 'Unable to insert the course year record into the database',
+    };
   }
-  database.candidates = database.candidates.concat(sheetData);
-  const candidates = true;
-  console.log(database.candidates);
-  return candidates;
+  let affectedRows = 0;
+  let loopCounter = 0;
+  try {
+    await db.query('START TRANSACTION');
+    Object.keys(jsonData).forEach(async (element) => {
+      const data = jsonData[element];
+      Object.keys(data).forEach(async (row) => {
+        data[row].CourseYear_id = courseYearId;
+        const rowResul = await db.query('INSERT INTO Candidate SET ?', [
+          data[row],
+        ]);
+        affectedRows += rowResul.affectedRows;
+        loopCounter += 1;
+      });
+    });
+
+    await db.query('COMMIT');
+  } catch (err) {
+    return {
+      error: `Something went wrong while inserting the records into the database, ${err}`,
+    };
+  }
+  if (affectedRows !== loopCounter) {
+    return {
+      error: `Inserted rows are not the same as rows from the excel file: inserted ${affectedRows}, rows in file (all sheets) ${loopCounter}`,
+    };
+  }
+  return true;
 };
 
 // updates candidate

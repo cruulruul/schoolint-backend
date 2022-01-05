@@ -8,6 +8,7 @@ router
   // .use(isLoggedIn)
   .use(cors())
   .get('/', candidatesListsController.getAllCandidatesLists)
+  .patch('/:id', candidatesListsController.updateCandidateListById)
   .post('/', candidatesListsController.uploadList);
 
 module.exports = router;

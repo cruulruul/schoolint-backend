@@ -133,7 +133,7 @@ usersController.updateUser = async (req, res) => {
   }
   const user = usersService.getUserById(id);
   if (!user) {
-    res.status(400).json({
+    res.status(404).json({
       error: `No user found with id: ${id}`,
     });
   }

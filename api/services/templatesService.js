@@ -34,7 +34,7 @@ templatesService.getTemplates = async () => {
       const { name } = key;
       const fieldsData = key.fields;
       if (!idFieldsArray[id]) idFieldsArray[id] = {};
-      idFieldsArray[id][name] = JSON.parse(fieldsData);
+      idFieldsArray[id][name] = JSON.parse(fieldsData).sort();
     });
     const template = templates.find((element) => element.id === id);
     template.values = idFieldsArray[id];
@@ -65,7 +65,7 @@ templatesService.getTemplateById = async (id) => {
     const { name } = key;
     const fieldsData = key.fields;
     if (!idFieldsArray[id]) idFieldsArray[id] = {};
-    idFieldsArray[id][name] = JSON.parse(fieldsData);
+    idFieldsArray[id][name] = JSON.parse(fieldsData).sort();
   });
   template[0].values = idFieldsArray[id];
   return template[0];
@@ -185,10 +185,10 @@ templatesService.validateJson = async (templateObject, data) => {
       counter < skimmedTemplateHeaders.length;
       counter += 1
     ) {
-      if (skimmedTemplateHeaders[counter].includes(':')) {
+      if (skimmedTemplateHeaders[counter].includes(';')) {
         skimmedTemplateHeaders[counter] = skimmedTemplateHeaders[
           counter
-        ].substring(skimmedTemplateHeaders[counter].indexOf(':') + 1);
+        ].substring(skimmedTemplateHeaders[counter].indexOf(';') + 1);
       }
     }
 
@@ -206,18 +206,17 @@ templatesService.validateJson = async (templateObject, data) => {
     const sheetData = data[Object.keys(data)[i]];
     for (let row = 0; row < sheetData.length; row += 1) {
       const rowData = sheetData[row];
-      const rowHeaders = Object.keys(rowData);
-      if (
-        templatesService.checkIsEmpty(
-          rowData,
-          importSheetHeaders,
-          templateSheetHeaders,
-        ) ||
-        rowHeaders.sort().toString() !== importSheetHeaders.sort().toString()
-      ) {
+
+      const emptyRows = templatesService.checkIsEmpty(
+        rowData,
+        importSheetHeaders,
+        templateSheetHeaders,
+      );
+
+      if (emptyRows[0]) {
         return {
-          error: `Import failed, error on row ${
-            row + 2
+          error: `Import failed, error on row ${row + 2}, ${
+            emptyRows[1]
           }, value is spaces or missing!`,
         };
       }
@@ -228,30 +227,37 @@ templatesService.validateJson = async (templateObject, data) => {
 };
 
 /**
- * Helper function to detect row empty values
+ * Helper function to detect row empty cells
  * @param {array} data
  * @param {array} headers
- * @returns {boolean}
+ * @returns {Array} On success (found not allowed empty cell): [true, header],
+ * On failure [false, '']
  */
 templatesService.checkIsEmpty = (data, headers, templateHeaders) => {
   for (let i = 0; i < headers.length; i += 1) {
-    // Check is allowed to be empty
-    const allowedEmpty = templateHeaders.find(
-      (element) => element > headers[i],
-    );
-
-    if (!allowedEmpty) {
-      const value = data[headers[i]];
+    const header = headers[i];
+    let allowedNull = false;
+    templateHeaders.forEach((element) => {
+      const splitTempHeader = element.split(';');
+      if (header === splitTempHeader[1]) {
+        const prefix = splitTempHeader[0].split('|');
+        if (prefix[1] === 'null') {
+          allowedNull = true;
+        }
+      }
+    });
+    if (!allowedNull) {
+      const value = data[header];
       if (
         value === null ||
         value === undefined ||
         value.toString().match(/^ *$/) !== null
       ) {
-        return true;
+        return [true, header];
       }
     }
   }
-  return false;
+  return [false, ''];
 };
 
 module.exports = templatesService;
