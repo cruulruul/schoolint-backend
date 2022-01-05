@@ -2,7 +2,11 @@ const db = require('../../db');
 
 const candidatesListsService = {};
 
-// Returns list of candidates lists
+/**
+ * All lists query from the database
+ * @returns {json}
+ * If no records found returns empty JSON.
+ */
 candidatesListsService.getAllCandidatesLists = async () => {
   const candidatesLists = await db.query(`
     SELECT
@@ -12,6 +16,13 @@ candidatesListsService.getAllCandidatesLists = async () => {
   return candidatesLists;
 };
 
+/**
+ * Single list query from the database
+ * @param {int} id
+ * @returns {(json|boolean)}
+ * If no records found returns false
+ * On success returns JSON.
+ */
 candidatesListsService.getListById = async (id) => {
   const candidatesList = await db.query(
     `
@@ -26,6 +37,12 @@ candidatesListsService.getListById = async (id) => {
   return candidatesList[0];
 };
 
+/**
+ * Updates the list with given id,
+ * @param {json} list
+ * @returns {boolean}
+ * If no rows were updated returns false, on success returns true
+ */
 candidatesListsService.updateCandidateListById = async (list) => {
   const listToUpdate = {
     enabled: list.enabled,
@@ -40,6 +57,14 @@ candidatesListsService.updateCandidateListById = async (list) => {
   return false;
 };
 
+/**
+ * Helper, swaps the imported excel headers to template ones
+ * (needed to map the db collumn names after while inserting to db)
+ * @param {json} templateObject
+ * @param {json} data
+ * @returns {json}
+ * Returns swapped JSON dataset.
+ */
 candidatesListsService.changeJsonKeys = async (templateObject, data) => {
   const template = templateObject.values;
   const importSheets = Object.keys(data);

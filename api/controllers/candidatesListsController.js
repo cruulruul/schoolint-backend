@@ -10,11 +10,29 @@ const config = require('../../config');
 
 const candidatesListsController = {};
 
+/**
+ * Returns all the imported list from the database.
+ * @returns {json} On success, returns JSON with data and status code 200.
+ * On failure returns JSON with error message and status code 500.
+ */
 candidatesListsController.getAllCandidatesLists = async (req, res) => {
-  const candidatesLists = await candidatesListsService.getAllCandidatesLists();
-  res.status(200).json({ candidatesLists });
+  try {
+    const candidatesLists = await candidatesListsService.getAllCandidatesLists();
+    return res.status(200).json({ candidatesLists });
+  } catch (err) {
+    return res.status(500).send({
+      error: `Could not get candidates list: ${err}`,
+    });
+  }
 };
 
+/**
+ * Enables/Disables the list
+ * @param {int} req.params.id (.../lists/:id)
+ * @param {json} req.body { enabled: 0/1 }
+ * @returns {json} On success returns JSON (success=true).
+ * On failure returns JSON with error msg and status code 400, 404 or 500.
+ */
 candidatesListsController.updateCandidateListById = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { enabled } = req.body;
@@ -28,34 +46,46 @@ candidatesListsController.updateCandidateListById = async (req, res) => {
       error: 'Required data (enabled) is missing or bit (0/1)',
     });
   }
-  const list = await candidatesListsService.getListById(id);
-  if (!list) {
-    return res.status(404).json({
-      error: `No list found with id: ${id}`,
+  try {
+    const list = await candidatesListsService.getListById(id);
+    if (!list) {
+      return res.status(404).json({
+        error: `No list found with id: ${id}`,
+      });
+    }
+    const listToUpdate = {
+      id,
+      enabled,
+    };
+    const success = await candidatesListsService.updateCandidateListById(
+      listToUpdate,
+    );
+    if (!success) {
+      return res.status(500).json({
+        error: 'Something went wrong while updating the list status',
+      });
+    }
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      error: `Could not update candidates list: ${err}`,
     });
   }
-  const listToUpdate = {
-    id,
-    enabled,
-  };
-  const success = await candidatesListsService.updateCandidateListById(
-    listToUpdate,
-  );
-  if (!success) {
-    return res.status(500).json({
-      error: 'Something went wrong while updating the list status',
-    });
-  }
-  return res.status(200).json({
-    success: true,
-  });
 };
 
 /**
- * Description
- * @param {json} req
- * @param {any} res
- * @returns {any}
+ * Uploads the file to {baseDir}/uploads/ (defined in config.js).
+ * Checks the file extension (only xls or xlsx allowed).
+ * Parses the excel file to json and compares the data with template
+ * Passes the data to service for db insert.
+ * @param {file} req.file
+ * @param {json} req.body.courseId
+ * @param {json} req.body.templateId
+ * @param {json} req.body.year
+ * @returns {json} On success returns JSON success and status 201.
+ * On failure returns JSON with error message and status code 400, 404, 406 or 500.
  */
 candidatesListsController.uploadList = async (req, res) => {
   try {

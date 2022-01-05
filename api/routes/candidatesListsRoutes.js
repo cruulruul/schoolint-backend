@@ -10,5 +10,7 @@ router
   .get('/', candidatesListsController.getAllCandidatesLists)
   .patch('/:id', candidatesListsController.updateCandidateListById)
   .post('/', candidatesListsController.uploadList);
+// TODO Deleting the list with all candidates, result etc
+// .delete('/:id', candidatesListsController.deleteList)
 
 module.exports = router;
