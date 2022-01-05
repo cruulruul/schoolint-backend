@@ -4,7 +4,11 @@ const db = require('../../db');
 
 const usersService = {};
 
-// Returns list of users
+/**
+ * All users query from the database
+ * @returns {json} If no records found returns empty JSON.
+ * On success returns JSON
+ */
 usersService.getUsers = async () => {
   const users = await db.query(
     `SELECT
@@ -21,7 +25,13 @@ usersService.getUsers = async () => {
   return users;
 };
 
-// Find user by id. Returns user if found or false.
+/**
+ * Single user query from the database by id
+ * @param {any} id
+ * @returns {any}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
 usersService.getUserById = async (id) => {
   const user = await db.query(
     `SELECT
@@ -41,7 +51,12 @@ usersService.getUserById = async (id) => {
   return user[0];
 };
 
-// Creates new user, returns id on new user
+/**
+ * Hash's the password and creates new user
+ * @param {json} newUser
+ * @returns {json}
+ * Returns created user Id
+ */
 usersService.createUser = async (newUser) => {
   const existingUser = await usersService.getUserByEmail(newUser.email);
   if (existingUser) {
@@ -61,7 +76,12 @@ usersService.createUser = async (newUser) => {
   return { id: result.insertId };
 };
 
-// Updates user
+/**
+ * Updates the user record by Id
+ * @param {json} user
+ * @returns {boolean}
+ * On success returns true on failure false.
+ */
 usersService.updateUser = async (user) => {
   const userToUpdate = {};
   if (user.firstName) {
@@ -93,7 +113,13 @@ usersService.updateUser = async (user) => {
   return false;
 };
 
-// Find user by email. Returns user if found or undefined
+/**
+ * Single user query from the database by email
+ * @param {string} email
+ * @returns {(json|boolean)}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
 usersService.getUserByEmail = async (email) => {
   const user = await db.query(
     `SELECT
@@ -113,13 +139,27 @@ usersService.getUserByEmail = async (email) => {
   return user[0];
 };
 
-// Deletes user
+/**
+ * Deletes the user record from the database by id
+ * @param {int} id
+ * @returns {boolena}
+ */
 usersService.deleteUserById = async (id) => {
-  await db.query('UPDATE User SET deleted = 1 WHERE id = ?', [id]);
-  return true;
+  const result = await db.query('UPDATE User SET deleted = 1 WHERE id = ?', [
+    id,
+  ]);
+  if (result.affectedRows === 1) {
+    return true;
+  }
+  return false;
 };
 
-// User login
+/**
+ * Compares the login credentials and returns the bearer token
+ * @param {json} login
+ * @returns {json} On success returns JSON with token.
+ * On failure returns JSON with error message.
+ */
 usersService.login = async (login) => {
   const { email, password } = login;
   const user = await usersService.getUserByEmail(email);

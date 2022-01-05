@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { usersController } = require('../controllers');
-const { validators, isLoggedIn, isAdmin } = require('../middlewares');
+const { validators, isAdmin } = require('../middlewares');
 
 const router = express.Router();
 
