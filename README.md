@@ -1,71 +1,100 @@
-API käivitamiseks:
+## Schoolint rakenduse backend
 
-1. Klooni repositoorium vabalt valitud asukohta enda tööjaamas
-2. Veendu, et tööjaamas oleks paigaldatud Node.js ning npm
-3. Navigeeri repositooriumi juurkausta (CLI - CMD, Terminal) ning käivita käsk "npm install"
-4. Rakenduse käivitamiseks käsk samas kaustas "node index.js"
-5. Endpointide pihta päringute tegemiseks soovian kasutada postman tarkvara. Rakendus käivitub localhost:3001 aadressil
+## Nõuded (tarkvara)
 
-Testimiseks loodud 2 kasutajat:
+* Node
+* NPM
+* Git
+* Docker mariadb
 
-Admin User
-E-mail: admin@yourdomain.com
-Parool: midagikeerulist
+## Seadistus
 
-Test User
-E-mail: test@yourdomain.com
-Parool: midagikeerulist
+#### Docker & mariadb konteiner
 
-Endpoint'id:
+Samm 1: Lae alla endale docker https://www.docker.com/get-started ja paigalde see enda tööjaama
+Samm 2: Ava terminal/cmd/powershell - Käivita enda masinas mariadb konteiner ning määra andmebaasi parool.
+```bash
+docker container run -p 3306:3306 --name mariadb -e MARIADB_ROOT_PASSWORD=sinuvalitudparool -d  mariadb
+```
 
-1. Users - Mõeldud autentimise, kasutajate info, kustutamis, loomis ja uuendamis tegevusteks.
+#### Projekti seadistamine ja käivitamine
+Tegevused toimuvad terminalis projekti kaustas (juurikas)
+Samm 1: Klooni repositoorium, installeeri vajalikud node teekid 
+```bash
+git clone https://github.com/cruulruul/schoolint-backend.git
+cd schoolint-backend
+npm install
+```
+Samm 2: Seadista rakenduse sätted
+```bash
+cp config.sample.js config.js
+```
+Ava kopeeritud config.js ning seadista sätted järgmiselt
+```json
+const config = {
+  port: 3001,
+  saltRounds: 10,
+  jwtSecret: 'secret',
+  baseDir: __dirname,
+  db: {
+    host: 'localhost',
+    user: 'root',
+    password: 'siia lisa sinu valitud parool, see mis panid dockeri mariadb'le',
+  },
+};
+```
 
-- POST (/users) - Loob uue kasutaja kui kaasa on antud JSON body's järgmised võtmed (vaikimisi luuakse "User" roll tüüpi kasutaja):
-- Näiteks: {"firstName": "Caspar","lastName": "Ruul","email": "caspar@example.com", "password": "midagi"}
-- POST (users/login) - Tagastab bearer tokeni, mida saab kasutada järgmiste endpointide ligipääsuks (tokeni sees on ka kasutaja roll)
+Samm 3: Paigalda andmebaas ja algandmed
+```bash
+npm run db-generate
+```
 
-Autentimisega kaitstud (vajalik "Admin" roll tokenis)
+Rakenduse käivitamiseks
+```bash
+npm run start
+```
 
-- GET (/users) - Tagastab kõik kasutajad
-- GET (/users/{id}) - Tagastab {id} alusel olemasolul kasutaja
-- DEL (/users/{id}) - Kustutab {id} alusel olemasolul kasutaja
-- PATCH (/users/{id} - Võimaldab {id} alusel uuendada kasutaja järgmisi võtmeid (firstName, lastName, email, password)
+## Autentimine
 
-2. Candidates - Mõeldud SAIS-ist kandidaatide importimiseks (hetkel mock ja fiktiivne, et saaks front-end arendust teha).
+Vaikimisi on süsteemi loodud kaks kasutajat (admin ja tavaline kasutaja)
 
-Autentimise kaitstud (rolli ei kontrollita)
+**Admin**
+Kasutajanimi: admin@yourdomain.com
+parool: midagikeerulist
 
-- GET (/candidates) - Tagastab kõik kandidaadid
-- GET (/candidates/{id}) - Tagastab {id} alusel olemasolul kandidaadi
-- PATCH (/candidates/{id} - Võimaldab {id} alusel uuendada kandidaadi järgmisi võtmeid (firstName, lastName, email, personalId)
-- POST (/candidates) - Kandidaatide laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
+**Tavaline**
+Kasutajanimi: test@yourdomain.com
+parool: midagikeerulist
 
-Vajalik "Admin" roll
+## Arendamine
 
-- DEL (/candidates/{id}) - Kustutab {id} alusel olemasolul kandidaadi
+Samm 1: Lae alla viimane koodi seis main harust
+```bash
+git pull
+```
 
-3. Results - Mõeldud kandidaatide tulemuste importimiseks (hetkel mock ja fiktiivne, et saaks front-end arendust teha).
+Samm 2: Tee uus branch. Nimi kujuneb selliselt - TH-23-uus-asi. Ehk jira-taski-nr-mida-branchis-tegema hakkad.
+```bash
+git checkout -b jira-taski-nr-mida-branchis-tegema
+```
 
-Autentimise kaitstud (rolli ei kontrollita)
+Samm 4: Uuenda andmebaas
+```bash
+npm run db-generate
+```
 
-- GET (/results) - Tagastab kõik tulemused
-- GET (/results/{id}) - Tagastab {id} alusel olemasolul tulemuse
-- PATCH (/results/{id} - Võimaldab {id} alusel uuendada kandidaadi tulemuse järgmisi võtmeid (candidateId, score)
-- POST (/results) - Tulemuste laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
+Samm 5: Kui arendus valmis, lae haru git'i ülesse
+```bash
+git add .
+git commit -m "jira taski nr mida branchis tegid"
+git push --set-upstream origin jira-taski-nr-mida-branchis-tegema
+```
 
-Vajalik "Admin" roll
+Samm 6: Tee pull request
+- Ava browseris front end git repositooriumis pull requestide aken - https://github.com/cruulruul/schoolint-backend/pulls
+- Klikka nupul "New pull request"
+- base haruks peab olema main
+- compare haruks sinu viimati tehtud haru
+- create
 
-- DEL (/results/{id}) - Kustutab {id} alusel olemasolul tulemuse
-
-4. Templates - Mõeldud importimise väljade mallide jaoks.
-
-Autentimise kaitstud (rolli ei kontrollita)
-
-- GET (/templates) - Tagastab kõik mallid
-- GET (/templates/{id}) - Tagastab {id} alusel olemasolul malli
-- PATCH (/templates/{id} - Võimaldab {id} alusel uuendada malli järgmisi võtmeid (name, fields ([<fieldname>, <fieldname>]))
-- POST (/templates) - mallide laadimiseks (hetkel tagastab mis tahes POST-i peale 200 success)
-
-Vajalik "Admin" roll
-
-- DEL (/templates/{id}) - Kustutab {id} alusel olemasolul malli
+Samm 7: Anna teada tiimile, et tegid pull requesti.

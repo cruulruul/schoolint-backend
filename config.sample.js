@@ -4,8 +4,8 @@ const config = {
   jwtSecret: 'secret',
   baseDir: __dirname,
   db: {
-    host: '',
-    user: '',
+    host: 'localhost',
+    user: 'root',
     password: '',
   },
 };
