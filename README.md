@@ -68,9 +68,10 @@ parool: midagikeerulist
 
 ## Arendamine
 
-Samm 1: Lae alla viimane koodi seis main harust
+Samm 1: Lae alla viimane koodi seis main harust ja uuenda andmebaas
 ```bash
 git pull
+npm run db-generate
 ```
 
 Samm 2: Tee uus branch. Nimi kujuneb selliselt - TH-23-uus-asi. Ehk jira-taski-nr-mida-branchis-tegema hakkad.
@@ -78,23 +79,18 @@ Samm 2: Tee uus branch. Nimi kujuneb selliselt - TH-23-uus-asi. Ehk jira-taski-n
 git checkout -b jira-taski-nr-mida-branchis-tegema
 ```
 
-Samm 4: Uuenda andmebaas
-```bash
-npm run db-generate
-```
-
-Samm 5: Kui arendus valmis, lae haru git'i ülesse
+Samm 3: Kui arendus valmis, lae haru git'i ülesse
 ```bash
 git add .
 git commit -m "jira taski nr mida branchis tegid"
 git push --set-upstream origin jira-taski-nr-mida-branchis-tegema
 ```
 
-Samm 6: Tee pull request
+Samm 4: Tee pull request
 - Ava browseris front end git repositooriumis pull requestide aken - https://github.com/cruulruul/schoolint-backend/pulls
 - Klikka nupul "New pull request"
 - base haruks peab olema main
 - compare haruks sinu viimati tehtud haru
 - create
 
-Samm 7: Anna teada tiimile, et tegid pull requesti.
+Samm 5: Anna teada tiimile, et tegid pull requesti.
