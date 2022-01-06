@@ -6,11 +6,11 @@ const { isLoggedIn, isAdmin } = require('../middlewares');
 const router = express.Router();
 
 /**
- * results API endpoints
+ * Results API endpoints
  */
 router
-  .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
   .use(cors())
+  .use(isLoggedIn) // Nii kaua kui kasutajaid pole rakendusse lisatud, kommenteeri välja
   .get('/', resultsController.getResults)
   .get('/:id', resultsController.getResultById)
   .post('/', resultsController.createResults)

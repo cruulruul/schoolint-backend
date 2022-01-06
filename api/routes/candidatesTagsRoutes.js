@@ -1,15 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const { candidatesTagsController } = require('../controllers');
-const { isLoggedIn, isAdmin } = require('../middlewares');
+const { isAdmin, isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
+/**
+ * Candidates tags API endpoints
+ */
 router
-  .use(isLoggedIn)
   .use(cors())
-  .get('/', isAdmin, candidatesTagsController.getAllCandidatesTags)
+  .use(isLoggedIn)
+  .get('/', candidatesTagsController.getAllCandidatesTags)
+  .get('/coursetags/:id', candidatesTagsController.getTagsByCourseId)
   .post('/', isAdmin, candidatesTagsController.createTag)
-  .patch('/:id', isAdmin, candidatesTagsController.updateTag);
+  .delete('/:id', isAdmin, candidatesTagsController.deleteTagById);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const templatesRoutes = require('./templatesRoutes');
 const uploadRoutes = require('./uploadRoutes');
 const candidatesListsRoutes = require('./candidatesListsRoutes');
 const candidatesTagsRoutes = require('./candidatesTagsRoutes');
+const coursesRoutes = require('./coursesRoutes');
 
 module.exports = {
   usersRoutes,
@@ -13,5 +14,6 @@ module.exports = {
   templatesRoutes,
   uploadRoutes,
   candidatesListsRoutes,
-  candidatesTagsRoutes
+  candidatesTagsRoutes,
+  coursesRoutes,
 };

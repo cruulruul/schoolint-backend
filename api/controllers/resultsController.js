@@ -11,7 +11,7 @@ const resultsController = {};
  */
 resultsController.getResults = (req, res) => {
   const candidates = resultsService.getResults();
-  res.status(200).json({
+  return res.status(200).json({
     candidates,
   });
 };
@@ -28,7 +28,7 @@ resultsController.getResultById = (req, res) => {
   const id = parseInt(req.params.id, 10);
   const result = resultsService.getResultById(id);
   if (!result) {
-    return res.status(400).json({
+    return res.status(404).json({
       error: `No result found with id: ${id}`,
     });
   }
@@ -66,13 +66,13 @@ resultsController.updateResult = async (req, res) => {
   const { candidateId, score } = req.body;
 
   if (!id && !(candidateId || score)) {
-    res.status(400).json({
+    return res.status(400).json({
       error: 'Required data is missing',
     });
   }
   const result = resultsService.getResultById(id);
   if (!result) {
-    res.status(400).json({
+    return res.status(404).json({
       error: `No result found with id: ${id}`,
     });
   }

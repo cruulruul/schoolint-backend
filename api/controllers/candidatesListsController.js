@@ -1,10 +1,184 @@
-const { candidatesListsService } = require('../services');
+const fs = require('fs');
+const {
+  candidatesListsService,
+  templatesService,
+  candidatesService,
+  coursesService,
+} = require('../services');
+const { upload, excelParser } = require('../middlewares');
+const config = require('../../config');
 
 const candidatesListsController = {};
 
-candidatesListsController.getAllCandidatesLists = (req, res) => {
-  const candidatesLists = candidatesListsService.getAllCandidatesLists();
-  res.status(200).json({ candidatesLists });
+/**
+ * Returns all the imported list from the database.
+ * @returns {json} On success, returns JSON with data and status code 200.
+ * On failure returns JSON with error message and status code 500.
+ */
+candidatesListsController.getAllCandidatesLists = async (req, res) => {
+  try {
+    const candidatesLists = await candidatesListsService.getAllCandidatesLists();
+    return res.status(200).json({ candidatesLists });
+  } catch (err) {
+    return res.status(500).send({
+      error: `Could not get candidates list: ${err}`,
+    });
+  }
+};
+
+/**
+ * Enables/Disables the list
+ * @param {int} req.params.id (.../lists/:id)
+ * @param {json} req.body { enabled: 0/1 }
+ * @returns {json} On success returns JSON (success=true).
+ * On failure returns JSON with error msg and status code 400, 404 or 500.
+ */
+candidatesListsController.updateCandidateListById = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { enabled } = req.body;
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+  if (enabled === undefined && enabled > 1) {
+    return res.status(400).json({
+      error: 'Required data (enabled) is missing or bit (0/1)',
+    });
+  }
+  try {
+    const list = await candidatesListsService.getListById(id);
+    if (!list) {
+      return res.status(404).json({
+        error: `No list found with id: ${id}`,
+      });
+    }
+    const listToUpdate = {
+      id,
+      enabled,
+    };
+    const success = await candidatesListsService.updateCandidateListById(
+      listToUpdate,
+    );
+    if (!success) {
+      return res.status(500).json({
+        error: 'Something went wrong while updating the list status',
+      });
+    }
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      error: `Could not update candidates list: ${err}`,
+    });
+  }
+};
+
+/**
+ * Uploads the file to {baseDir}/uploads/ (defined in config.js).
+ * Checks the file extension (only xls or xlsx allowed).
+ * Parses the excel file to json and compares the data with template
+ * Passes the data to service for db insert.
+ * @param {file} req.file
+ * @param {json} req.body.courseId
+ * @param {json} req.body.templateId
+ * @param {json} req.body.year
+ * @returns {json} On success returns JSON success and status 201.
+ * On failure returns JSON with error message and status code 400, 404, 406 or 500.
+ */
+candidatesListsController.uploadList = async (req, res) => {
+  try {
+    // Uploads the file and adds form-data to req
+    await upload(req, res);
+
+    // Check for necessary form-data values and mimetype
+    // File related
+    if (req.file === undefined) {
+      return res.status(400).send({ error: 'File missing' });
+    }
+    const fileName = req.file.originalname;
+    if (!fileName) {
+      return res.status(500).send({ error: 'File not found' });
+    }
+    // Check filetype (xls, xlsx)
+    const fileTypes = ['xls', 'xlsx'];
+    if (!fileTypes.includes(fileName.substring(fileName.indexOf('.') + 1))) {
+      // delete the file
+      fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
+      return res
+        .status(406)
+        .send({ error: `Wrong file type, allowed: ${fileTypes}` });
+    }
+    // Check req.body related
+    const courseId = parseInt(req.body.courseId, 10);
+    const templateId = parseInt(req.body.templateId, 10);
+    const listYear = parseInt(req.body.year, 10);
+    if (!courseId) {
+      return res.status(400).send({ error: 'CourseId missing' });
+    }
+    if (!templateId) {
+      return res.status(400).send({ error: 'TemplateId missing' });
+    }
+    if (!listYear) {
+      return res.status(400).send({ error: 'Year missing' });
+    }
+
+    // Check does the course exists
+    const course = await coursesService.getCourseById(courseId);
+    if (!course) {
+      return res
+        .status(404)
+        .send({ error: `Course with id, ${courseId}, not found!` });
+    }
+
+    // Check does the template exists
+    const template = await templatesService.getTemplateById(templateId);
+    if (!template) {
+      return res
+        .status(404)
+        .send({ error: `Template with id, ${templateId}, not found!` });
+    }
+
+    // Converts the excel file to JSON and deletes the temporary file
+    let jsonData = await excelParser(fileName);
+    fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
+    if (!jsonData) {
+      return res.status(500).send({
+        error: 'Something went wrong while parsing the excel file',
+      });
+    }
+
+    // Validates the data against the template
+    const validation = await templatesService.validateJson(template, jsonData);
+    if (validation.error) {
+      return res.status(406).json({
+        error: validation.error,
+      });
+    }
+
+    // Swap the JSON object key's to template ones
+    jsonData = await candidatesListsService.changeJsonKeys(template, jsonData);
+
+    // Passes the data to service for db insert
+    const importDatabase = await candidatesService.createCandidates(
+      jsonData,
+      courseId,
+      listYear,
+    );
+    if (importDatabase.error) {
+      return res.status(500).json({
+        error: importDatabase.error,
+      });
+    }
+  } catch (err) {
+    return res.status(500).send({
+      error: `Could not import the list: ${err}`,
+    });
+  }
+  return res.status(201).send({
+    success: 'Imported the list successfully',
+  });
 };
 
 module.exports = candidatesListsController;

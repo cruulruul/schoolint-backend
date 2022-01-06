@@ -1,16 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 const { candidatesListsController } = require('../controllers');
-// const { isLoggedIn } = require('../middlewares');
+const { isAdmin, isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
 /**
- * candidatesLists API endpoint
+ * Candidates lists API endpoints
  */
 router
-  // .use(isLoggedIn)
   .use(cors())
-  .get('/', candidatesListsController.getAllCandidatesLists);
+  .use(isLoggedIn)
+  .get('/', isAdmin, candidatesListsController.getAllCandidatesLists)
+  .patch('/:id', candidatesListsController.updateCandidateListById)
+  .post('/', candidatesListsController.uploadList);
+// TODO Deleting the list with all candidates, result etc
+// .delete('/:id', candidatesListsController.deleteList)
 
 module.exports = router;
