@@ -97,7 +97,7 @@ candidatesListsController.uploadList = async (req, res) => {
     if (req.file === undefined) {
       return res.status(400).send({ error: 'File missing' });
     }
-    const fileName = req.file.originalname;
+    const fileName = req.file.filename;
     if (!fileName) {
       return res.status(500).send({ error: 'File not found' });
     }
