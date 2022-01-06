@@ -155,8 +155,8 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
  */
 candidatesService.updateCandidate = async (candidate) => {
   const candidateToUpdate = {};
-  if (candidate.present != null) {
-    candidateToUpdate.present = candidate.present ? 1 : 0;
+  if (candidate.present) {
+    candidateToUpdate.present = candidate.present;
   }
   const result = await db.query('UPDATE Candidate SET ? WHERE id = ?', [
     candidateToUpdate,
