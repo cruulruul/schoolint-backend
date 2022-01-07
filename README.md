@@ -90,6 +90,7 @@ git push --set-upstream origin jira-taski-nr-mida-branchis-tegema
 <br>
 ___
 <br>
+
 ## *Endpoint*'id
 ### Autentimine
 
@@ -110,7 +111,7 @@ parool: midagikeerulist
 Mõeldud autentimise tokeni saamiseks, kasutajate pärimiseks, loomiseks, uuendamiseks ja kustutamiseks.
 <br>
 
-####URL : `/users/login`
+#### URL : `/users/login`
 Tagastab kasutaja olemasolul autentimise *token*'i
 
 **Meetod** : `POST`
@@ -166,12 +167,13 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 
 <br>
 <br>
+
 ### Candidates
 
 Mõeldud kandidaatide pärimiseks, uuendamiseks, manuste lisamiseks, manuste eemaldamiseks ja kustutamiseks.
 <br>
 
-####URL : `/candidates`
+#### URL : `/candidates`
 Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õigusest.
 
 **Meetod** : `GET`
@@ -227,7 +229,7 @@ Kui andmebaasis puuduvad kandidaadid
 
 <br>
 
-####URL : `/candidates/:id`
+#### URL : `/candidates/:id`
 Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 
 **Meetod** : `GET`
@@ -310,7 +312,7 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 <br>
 <br>
 
-####URL : `/candidates/:id`
+#### URL : `/candidates/:id`
 Uuendab kandidaadi kohal olekut
 
 **Meetod** : `PATCH`
@@ -353,7 +355,7 @@ Uuendab kandidaadi kohal olekut
 <br>
 <br>
 
-####URL : `/candidates/attachment/`
+#### URL : `/candidates/attachment/`
 Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele manusele ka kandidaadi ülejäänud manused.
 
 **Meetod** : `POST`
@@ -433,7 +435,7 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 <br>
 <br>
 
-####URL : `/candidates/attachment/:id`
+#### URL : `/candidates/attachment/:id`
 Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 
 **Meetod** : `GET`
@@ -492,7 +494,7 @@ Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 <br>
 <br>
 
-####URL : `/candidates/attachment`
+#### URL : `/candidates/attachment`
 Description
 
 **Meetod** : `DELETE`
