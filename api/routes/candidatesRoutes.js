@@ -14,8 +14,8 @@ router
   .get('/', candidatesController.getCandidates)
   .get('/:id', candidatesController.getCandidateById)
   .patch('/:id', candidatesController.updateCandidate)
-  .get('/attachment/:attachmentId', candidatesController.getAttachmentFile)
   .post('/attachment', candidatesController.uploadAttachment)
+  .get('/attachment/:id', candidatesController.getAttachmentFile)
   .delete('/attachment', candidatesController.deleteAttachment);
 
 module.exports = router;

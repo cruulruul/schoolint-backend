@@ -111,7 +111,7 @@ usersController.createUser = async (req, res) => {
  */
 usersController.login = async (req, res) => {
   const { email, password } = req.body;
-  if (!email && !password) {
+  if (!email || !password) {
     return res.status(400).json({
       error: 'Email or password missing',
     });

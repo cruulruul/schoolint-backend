@@ -51,7 +51,7 @@ candidatesController.getCandidateById = async (req, res) => {
     });
   } catch (err) {
     return res.status(500).send({
-      error: `An internal error occurred while trying to fetch candidates: ${err}`,
+      error: `An internal error occurred while trying to fetch candidate: ${err}`,
     });
   }
 };
@@ -94,7 +94,8 @@ candidatesController.updateCandidate = async (req, res) => {
     const success = await candidatesService.updateCandidate(candidateToUpdate);
     if (!success) {
       return res.status(500).json({
-        error: 'Something went wrong while updating the candidate',
+        error:
+          'An internal error occurred while trying to update the candidate',
       });
     }
     return res.status(200).json({
@@ -126,6 +127,12 @@ candidatesController.uploadAttachment = async (req, res) => {
     const { originalname } = req.file;
     const candidateId = parseInt(req.body.candidateId, 10);
 
+    if (!candidateId) {
+      return res
+        .status(400)
+        .send({ error: 'A param "candidateId" is missing or not an integer' });
+    }
+
     const candidate = await candidatesService.getCandidateById(
       candidateId,
       userId,
@@ -144,11 +151,6 @@ candidatesController.uploadAttachment = async (req, res) => {
         error:
           'An internal error occurred while trying to upload the file: Could not get the original file name',
       });
-    }
-    if (!candidateId) {
-      return res
-        .status(400)
-        .send({ error: 'A param "candidateId" is missing or not an integer' });
     }
 
     const attachmentId = await candidatesService.createAttachment(
