@@ -92,10 +92,49 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
   if (candidate[0]) {
     const results = await resultsService.getResultById(id);
     Object.assign(candidate[0], results);
+    const attachments = await candidatesService.getCandidateAttachments(id);
+    Object.assign(candidate[0], attachments);
   } else {
     return false;
   }
   return candidate[0];
+};
+
+/**
+ * Query for candidate attachments
+ * @param {id} id
+ * @returns {json} Returns JSON.
+ */
+candidatesService.getCandidateAttachments = async (id) => {
+  const attachments = await db.query(
+    `
+  SELECT
+    id, filename as fileName, original_name as originalName
+  FROM schoolint.CandidateAttachment
+  WHERE Candidate_id = ?;`,
+    [id],
+  );
+  return { attachments };
+};
+
+/**
+ * Single candidate attachment query from the database by attachment id
+ * @param {id} id
+ * @returns {(boolena|json)}
+ * If no records found returns false.
+ * On success returns JSON.
+ */
+candidatesService.getCandidateAttachmentById = async (id) => {
+  const attachment = await db.query(
+    `
+  SELECT
+    id, filename as fileName, original_name as originalName, Candidate_id as candidateId
+  FROM schoolint.CandidateAttachment
+  WHERE id = ?;`,
+    [id],
+  );
+  if (!attachment[0]) return false;
+  return attachment[0];
 };
 
 /**
@@ -132,8 +171,8 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
         loopCounter += 1;
       });
     });
-
     await db.query('COMMIT');
+    if (affectedRows !== loopCounter) await db.query('ROLLBACK');
   } catch (err) {
     return {
       error: `Something went wrong while inserting the records into the database, ${err}`,
@@ -149,7 +188,7 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
 
 /**
  * Updates the candidate with given id,
- * @param {json} list
+ * @param {json}
  * @returns {boolean}
  * If no rows were updated returns false, on success returns true
  */
@@ -162,6 +201,51 @@ candidatesService.updateCandidate = async (candidate) => {
     candidateToUpdate,
     candidate.id,
   ]);
+  if (result.affectedRows === 1) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * Inserts the candidate attachment info into the database
+ * @param {int} candidateId
+ * @param {string} filename
+ * @param {string} originalname
+ * @returns {int}
+ */
+candidatesService.createAttachment = async (
+  candidateId,
+  filename,
+  originalname,
+) => {
+  const file = {
+    filename,
+    candidate_id: candidateId,
+    original_name: originalname,
+  };
+  const result = await db.query('INSERT INTO CandidateAttachment SET ?', [
+    file,
+  ]);
+  if (!result.insertId) {
+    return {
+      error: 'An internal error occurred while trying to upload the file',
+    };
+  }
+  return result.insertId;
+};
+
+/**
+ * Delete query, remove candidate attachment by id and candidate id
+ * @param {int} id
+ * @param {int} candidateId
+ * @returns {boolena}
+ */
+candidatesService.deleteAttachment = async (id, candidateId) => {
+  const result = await db.query(
+    'DELETE FROM CandidateAttachment WHERE id = ? and candidate_id = ?',
+    [id, candidateId],
+  );
   if (result.affectedRows === 1) {
     return true;
   }

@@ -27,8 +27,8 @@ usersService.getUsers = async () => {
 
 /**
  * Single user query from the database by id
- * @param {any} id
- * @returns {any}
+ * @param {int} id
+ * @returns {(boolean|json)}
  * If no records found returns false.
  * On success returns JSON.
  */

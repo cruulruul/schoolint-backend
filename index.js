@@ -4,7 +4,6 @@ const config = require('./config');
 const {
   usersRoutes,
   candidatesRoutes,
-  uploadRoutes,
   resultsRoutes,
   templatesRoutes,
   candidatesListsRoutes,
@@ -24,7 +23,6 @@ app.use(express.json());
 app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
 app.use('/courses', coursesRoutes);
-app.use('/upload', uploadRoutes);
 app.use('/results', resultsRoutes);
 app.use('/templates', templatesRoutes);
 app.use('/lists', candidatesListsRoutes);
