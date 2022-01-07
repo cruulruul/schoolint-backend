@@ -115,7 +115,9 @@ Mõeldud autentimise tokeni saamiseks, kasutajate pärimiseks, loomiseks, uuenda
 Tagastab kasutaja olemasolul autentimise *token*'i
 
 **Meetod** : `POST`
+
 **Autentimine nõutud** : EI
+
 **Nõutud andmed** :
 ```json
 {
@@ -126,7 +128,9 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Tingimus** : Kui kõik nõutud andmed on olemas ning kasutaja eksisteerib andmebaasis
+
 **Sisu näide:**
 ```json
 {
@@ -137,7 +141,9 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 #### Error tulemused:
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Email või parool on päringust puudu
+
 **Sisu näide:**
 ```json
 {
@@ -147,7 +153,9 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 <br>
 
 **Kood** : `403 Forbidden`
+
 **Tingimus** : Kasutaja (e-mail) ei eksisteeri andmebaasis
+
 **Sisu näide:**
 ```json
 {
@@ -157,7 +165,9 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 <br>
 
 **Kood** : `403 Forbidden`
+
 **Tingimus** : Vale parool
+
 **Sisu näide:**
 ```json
 {
@@ -177,12 +187,15 @@ Mõeldud kandidaatide pärimiseks, uuendamiseks, manuste lisamiseks, manuste eem
 Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õigusest.
 
 **Meetod** : `GET`
+
 **Autentimine nõutud** : JAH
 
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Sisu näited:**
+
 Kui andmebaasis on olemas kandidaate
 
 ```json
@@ -233,14 +246,19 @@ Kui andmebaasis puuduvad kandidaadid
 Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 
 **Meetod** : `GET`
+
 **Autentimine nõutud** : EI
+
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
+
 **Nõutud URL parameetrid** : `id=[integer]` kus `id`on kandidaadid ID
 
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Tingimus** : Andmebaasis eksisteerib edastatatud ID'ga (`id`) kandidaat
+
 **Sisu näide** :
 ```json
 {
@@ -291,7 +309,9 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 #### Error tulemused:
 
 **Kood** : `404 Not Found`
+
 **Tingimus** : Andmebaasis ei eksisteeri küsitud kandidaati
+
 **Sisu näide:**
 ```json
 {
@@ -301,7 +321,9 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Error, mida ei suudetud käsitleda. Rakenduse poolt edastatud error `${err}`
+
 **Sisu näide:**
 ```json
 {
@@ -316,14 +338,19 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 Uuendab kandidaadi kohal olekut
 
 **Meetod** : `PATCH`
+
 **Autentimine nõutud** : JAH
+
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
+
 **Nõutud URL parameetrid** : `id=[integer]` kus `id`on kandidaadid ID
 
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Tingimus** : Andmebaasis eksisteerib edastatatud ID'ga (`id`) kandidaat
+
 **Sisu näide** :
 ```json
 {
@@ -334,7 +361,9 @@ Uuendab kandidaadi kohal olekut
 #### Error tulemused:
 
 **Kood** : `404 Not Found`
+
 **Tingimus** : Andmebaasis ei eksisteeri küsitud kandidaati
+
 **Sisu näide:**
 ```json
 {
@@ -344,7 +373,9 @@ Uuendab kandidaadi kohal olekut
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Error, mida ei suudetud käsitleda. Rakenduse poolt edastatud error `${err}`
+
 **Sisu näide:**
 ```json
 {
@@ -359,16 +390,20 @@ Uuendab kandidaadi kohal olekut
 Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele manusele ka kandidaadi ülejäänud manused.
 
 **Meetod** : `POST`
+
 **Autentimine nõutud** : JAH
+
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
+
 **Nõutud FORM parameetrid** : 
-`file=[*]`
-`candidateId=[integer]` kus `candidateId`on kandidaadid ID
+`file=[*]`, `candidateId=[integer]` kus `candidateId`on kandidaadid ID
 
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Tingimus** : Andmebaasis eksisteerib edastatatud ID'ga (`id`) kandidaat ning faili üles laadimine ja andmebaasi lisamine õnnestus.
+
 **Sisu näide** :
 ```json
 {
@@ -394,7 +429,9 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 #### Error tulemused:
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Edastatud `candidateId`on puudu või ei ole andmetüübilt `integer`
+
 **Sisu näide:**
 ```json
 {
@@ -404,7 +441,9 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 <br>
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Päringus puudub fail
+
 **Sisu näide:**
 ```json
 {
@@ -414,7 +453,9 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 <br>
 
 **Kood** : `404 Not Found`
+
 **Tingimus** : Andmebaasis ei eksisteeri edastatud kandidaati
+
 **Sisu näide:**
 ```json
 {
@@ -424,7 +465,9 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Error, mida ei suudetud käsitleda. Rakenduse poolt edastatud error `err`
+
 **Sisu näide:**
 ```json
 {
@@ -439,21 +482,28 @@ Kandidaadi manuste üles laadimiseks. Õnnestumise korral tagastab lisaks uuele 
 Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 
 **Meetod** : `GET`
+
 **Autentimine nõutud** : JAH
+
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
+
 **Nõutud URL parameetrid** : `id=[integer]` kus `id`on manuse ID
 
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
+
 **Tingimus** : Andmebaasis ja serveris eksisteerib küsitud manus
+
 **Sisu näide** :
 `küsitud fail`
 
 #### Error tulemused:
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Edastatud ID (`id`) ei ole valiidne või on puudulik
+
 **Sisu näide:**
 ```json
 {
@@ -463,7 +513,9 @@ Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 <br>
 
 **Kood** : `404 Not Found`
+
 **Tingimus** : Andmebaasis ei eksisteeri küsitud manust
+
 **Sisu näide:**
 ```json
 {
@@ -473,7 +525,9 @@ Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Andmebaasist saadud andmetes puudub faili nimi
+
 **Sisu näide:**
 ```json
 {
@@ -483,7 +537,9 @@ Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Error, mida ei suudetud käsitleda. Rakenduse poolt edastatud error `err`
+
 **Sisu näide:**
 ```json
 {
@@ -498,8 +554,11 @@ Mõeldud manuse saamiseks, olemasolul tagastab manuse faili.
 Description
 
 **Meetod** : `DELETE`
+
 **Autentimine nõutud** : JAH
+
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
+
 **Nõutud Query parameetrid** : 
 `id=[integer]` kus `id`on manuse ID
 `candidateId=[integer]` kus `candidateId`on kandidaadi ID
@@ -507,13 +566,16 @@ Description
 #### Õnnestunud tulemus:
 
 **Kood** : `204 No Content`
+
 **Tingimus** : Andmebaasis eksisteerib edastatatud ID'ga (`id`) manus ning kandidaat (`candidateId`)
 
 
 #### Error tulemused:
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Edastatud manuse ID (`id`) ei ole valiidne või on puudulik
+
 **Sisu näide:**
 ```json
 {
@@ -523,7 +585,9 @@ Description
 <br>
 
 **Kood** : `400 Bad Request`
+
 **Tingimus** : Edastatud kandidaadi ID (`candidateId`) ei ole valiidne või on puudulik
+
 **Sisu näide:**
 ```json
 {
@@ -533,7 +597,9 @@ Description
 <br>
 
 **Kood** : `404 Not Found`
+
 **Tingimus** : Andmebaasis ei eksisteeri küsitud manust
+
 **Sisu näide:**
 ```json
 {
@@ -543,7 +609,9 @@ Description
 <br>
 
 **Kood** : `500 Internal Server Error`
+
 **Tingimus** : Error, mida ei suudetud käsitleda. Rakenduse poolt edastatud error `err`
+
 **Sisu näide:**
 ```json
 {
