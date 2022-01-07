@@ -13,6 +13,9 @@ router
   .use(isLoggedIn)
   .get('/', candidatesController.getCandidates)
   .get('/:id', candidatesController.getCandidateById)
-  .patch('/:id', candidatesController.updateCandidate);
+  .patch('/:id', candidatesController.updateCandidate)
+  .get('/attachment/:attachmentId', candidatesController.getAttachmentFile)
+  .post('/attachment', candidatesController.uploadAttachment)
+  .delete('/attachment', candidatesController.deleteAttachment);
 
 module.exports = router;

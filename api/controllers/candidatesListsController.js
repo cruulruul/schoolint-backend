@@ -81,9 +81,9 @@ candidatesListsController.updateCandidateListById = async (req, res) => {
  * Parses the excel file to json and compares the data with template
  * Passes the data to service for db insert.
  * @param {file} req.file
- * @param {json} req.body.courseId
- * @param {json} req.body.templateId
- * @param {json} req.body.year
+ * @param {int} req.body.courseId
+ * @param {int} req.body.templateId
+ * @param {int} req.body.year
  * @returns {json} On success returns JSON success and status 201.
  * On failure returns JSON with error message and status code 400, 404, 406 or 500.
  */
@@ -97,7 +97,7 @@ candidatesListsController.uploadList = async (req, res) => {
     if (req.file === undefined) {
       return res.status(400).send({ error: 'File missing' });
     }
-    const fileName = req.file.originalname;
+    const fileName = req.file.filename;
     if (!fileName) {
       return res.status(500).send({ error: 'File not found' });
     }
