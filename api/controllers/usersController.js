@@ -3,6 +3,52 @@ const { usersService } = require('../services');
 const usersController = {};
 
 /**
+ * Authenticates the user and returns the bearer token.
+ * @param {string} req.body.email
+ * @param {string} req.body.password
+ * @returns {json} On success returns JSON with token and status 200.
+ * On failure returns JSON with error message and status code 400 or 403.
+ */
+usersController.login = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({
+      error: 'Email or password missing',
+    });
+  }
+  const login = {
+    email,
+    password,
+  };
+  try {
+    const data = await usersService.login(login);
+    if (data.error) {
+      return res.status(403).json({
+        error: data.error,
+      });
+    }
+    return res.status(200).json({
+      token: data.token,
+    });
+  } catch (err) {
+    return res.status(500).send({
+      error: `An internal error occurred while trying to authenticate the user: ${err}`,
+    });
+  }
+};
+
+usersController.getUserRole = async (req, res) => {
+  if (!req.userRole) {
+    return res.status(404).json({
+      error: 'User role not found',
+    });
+  }
+  return res.status(200).json({
+    role: req.userRole,
+  });
+};
+
+/**
  * Returns all users from the database
  * @returns {json} On success returns JSON and status code 200.
  * On failure returns JSON with error msg and status code 500.
@@ -98,41 +144,6 @@ usersController.createUser = async (req, res) => {
   } catch (err) {
     return res.status(500).send({
       error: `An internal error occurred while trying to create the user: ${err}`,
-    });
-  }
-};
-
-/**
- * Authenticates the user and returns the bearer token.
- * @param {string} req.body.email
- * @param {string} req.body.password
- * @returns {json} On success returns JSON with token and status 200.
- * On failure returns JSON with error message and status code 400 or 403.
- */
-usersController.login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({
-      error: 'Email or password missing',
-    });
-  }
-  const login = {
-    email,
-    password,
-  };
-  try {
-    const data = await usersService.login(login);
-    if (data.error) {
-      return res.status(403).json({
-        error: data.error,
-      });
-    }
-    return res.status(200).json({
-      token: data.token,
-    });
-  } catch (err) {
-    return res.status(500).send({
-      error: `An internal error occurred while trying to authenticate the user: ${err}`,
     });
   }
 };
