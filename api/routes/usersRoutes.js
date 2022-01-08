@@ -12,6 +12,7 @@ router
   .use(cors())
   .post('/login', usersController.login)
   .use(isLoggedIn)
+  .get('/role', usersController.getUserRole)
   .get('/', isAdmin, usersController.getUsers)
   .get('/:id', isAdmin, usersController.getUserById)
   .post('/', isAdmin, usersController.createUser)

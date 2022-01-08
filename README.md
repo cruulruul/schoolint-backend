@@ -176,6 +176,43 @@ Tagastab kasutaja olemasolul autentimise *token*'i
 ```
 
 <br>
+
+#### URL : `/users/role`
+Description
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>”`
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Tingimus** : Tuvastatakse tokeni seest kasutaja roll
+
+**Sisu näide** :
+```json
+{
+    "role": {userRole}
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Kui kasutaja roll puudub tokenis
+
+**Sisu näide:**
+```json
+{
+    "error": "User role not found"
+}
+```
+
+<br>
 <br>
 
 ### Candidates
