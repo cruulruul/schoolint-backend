@@ -1,6 +1,12 @@
 const { usersService } = require('../services');
+const { googleLoginUrl } = require('../../googleOAuth');
+const { users } = require('../../database');
 
 const usersController = {};
+
+usersController.loginUrl = async (req, res) => {
+  res.json(googleLoginUrl);
+};
 
 /**
  * Get all users
