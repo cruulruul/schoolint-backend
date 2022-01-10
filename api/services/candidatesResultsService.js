@@ -1,14 +1,15 @@
 const db = require('../../db');
-const database = require('../../database');
 
 const candidatesResultsService = {};
 
-// Returns list of results
-candidatesResultsService.getResults = () => {
-  const { results } = database;
-  return results;
-};
-
+/**
+ * Query for single candidate test results.
+ * @param {int} personalId
+ * @param {int} courseYearId
+ * @returns {object}
+ * If no record found, returns empty
+ * On success object
+ */
 candidatesResultsService.getResultsByPersonalIdid = async (
   personalId,
   courseYearId,
@@ -42,36 +43,6 @@ candidatesResultsService.getResultsByPersonalIdid = async (
     Object.assign(result[0], { scores: catScores[0] });
   }
   return result[0];
-};
-
-// Find result by id. Returns result if found or false.
-candidatesResultsService.getResultById = async (id) => {
-  const result = {
-    comments: '',
-    room: '',
-    finalScore: '',
-    scores: {
-      kat1: '',
-      kat2: '',
-      kat3: '',
-      kat4: '',
-    },
-    tags: [1, 2, 3],
-    background: null,
-    present: false,
-    // attachments: {
-    //   {
-    // id: 1,
-    // filename: "Pdasdasdasd.jpg",
-    // path: "/uploads/Pdasdasdasd-id.jpg",
-    //   },
-    // }
-  };
-  // const result = database.results.find((element) => element.id === id);
-  if (result) {
-    return result;
-  }
-  return false;
 };
 
 /**

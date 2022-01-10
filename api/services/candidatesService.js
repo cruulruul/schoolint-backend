@@ -19,6 +19,7 @@ candidatesService.getCandidates = async (userId, userRole) => {
       (CONCAT(co.name, RIGHT(cy.year,char_length(cy.year)-2))) as specialityCode,
       co.name as courseName,
       cy.year,
+      cy.id as courseYearId,
       c.first_name as firstName,
       c.last_name as lastName,
       c.email,
@@ -84,7 +85,7 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
   }
   const candidate = await db.query(sqlString);
 
-  // Get candidate scores
+  // Get candidate test results
   if (candidate[0]) {
     const results = await candidatesResultsService.getResultsByPersonalIdid(
       candidate[0].personalId,
