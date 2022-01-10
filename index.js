@@ -2,13 +2,13 @@ const express = require('express');
 const logger = require('morgan');
 const config = require('./config');
 const {
-  usersRoutes,
-  candidatesRoutes,
-  resultsRoutes,
-  templatesRoutes,
   candidatesListsRoutes,
+  candidatesResultsRoutes,
+  candidatesRoutes,
   candidatesTagsRoutes,
   coursesRoutes,
+  templatesRoutes,
+  usersRoutes,
 } = require('./api/routes');
 
 global.__basedir = __dirname;
@@ -20,13 +20,13 @@ const { port } = config || 3001;
 app.use(express.json());
 
 // Routes
-app.use('/users', usersRoutes);
 app.use('/candidates', candidatesRoutes);
 app.use('/courses', coursesRoutes);
-app.use('/results', resultsRoutes);
-app.use('/templates', templatesRoutes);
 app.use('/lists', candidatesListsRoutes);
+app.use('/results', candidatesResultsRoutes);
 app.use('/tags', candidatesTagsRoutes);
+app.use('/templates', templatesRoutes);
+app.use('/users', usersRoutes);
 
 // In case of wrong route
 app.use('*', (req, res) => {

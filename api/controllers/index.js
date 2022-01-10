@@ -1,17 +1,17 @@
-const usersController = require('./usersController');
 const candidatesController = require('./candidatesController');
-const resultsController = require('./resultsController');
-const templatesController = require('./templatesController');
 const candidatesListsController = require('./candidatesListsController');
+const candidatesResultsController = require('./candidatesResultsController');
 const candidatesTagsController = require('./candidatesTagsController');
 const coursesController = require('./coursesController');
+const templatesController = require('./templatesController');
+const usersController = require('./usersController');
 
 module.exports = {
-  usersController,
   candidatesController,
-  resultsController,
-  templatesController,
   candidatesListsController,
+  candidatesResultsController,
   candidatesTagsController,
   coursesController,
+  templatesController,
+  usersController,
 };

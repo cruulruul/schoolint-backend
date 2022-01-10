@@ -17,7 +17,7 @@ coursesController.getAllCourses = async (req, res) => {
  * Returns course by id from the database in JSON.
  * Example: "course": [{id,name}]
  * @param {int} req.params.id
- * @returns {json}
+ * @returns {object}
  * If no records found, error 404
  * On success, returns JSON
  */
@@ -37,7 +37,7 @@ coursesController.getCourseById = async (req, res) => {
 /**
  * Creates new course into the database.
  * @param {string} req.body.name
- * @returns {json}
+ * @returns {object}
  * If the required data is missing returns status code 400
  * and error message: "Required data is missing".
  * If the id is not returned from the servive returns status 500.

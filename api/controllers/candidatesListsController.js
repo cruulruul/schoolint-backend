@@ -12,7 +12,7 @@ const candidatesListsController = {};
 
 /**
  * Returns all the imported list from the database.
- * @returns {json} On success, returns JSON with data and status code 200.
+ * @returns {object} On success, returns JSON with data and status code 200.
  * On failure returns JSON with error message and status code 500.
  */
 candidatesListsController.getAllCandidatesLists = async (req, res) => {
@@ -29,8 +29,8 @@ candidatesListsController.getAllCandidatesLists = async (req, res) => {
 /**
  * Enables/Disables the list
  * @param {int} req.params.id (.../lists/:id)
- * @param {json} req.body { enabled: 0/1 }
- * @returns {json} On success returns JSON (success=true).
+ * @param {object} req.body { enabled: 0/1 }
+ * @returns {object} On success returns JSON (success=true).
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 candidatesListsController.updateCandidateListById = async (req, res) => {
@@ -84,7 +84,7 @@ candidatesListsController.updateCandidateListById = async (req, res) => {
  * @param {int} req.body.courseId
  * @param {int} req.body.templateId
  * @param {int} req.body.year
- * @returns {json} On success returns JSON success and status 201.
+ * @returns {object} On success returns JSON success and status 201.
  * On failure returns JSON with error message and status code 400, 404, 406 or 500.
  */
 candidatesListsController.uploadList = async (req, res) => {
@@ -112,14 +112,11 @@ candidatesListsController.uploadList = async (req, res) => {
     }
     // Check req.body related
     const courseId = parseInt(req.body.courseId, 10);
-    const templateId = parseInt(req.body.templateId, 10);
     const listYear = parseInt(req.body.year, 10);
     if (!courseId) {
       return res.status(400).send({ error: 'CourseId missing' });
     }
-    if (!templateId) {
-      return res.status(400).send({ error: 'TemplateId missing' });
-    }
+
     if (!listYear) {
       return res.status(400).send({ error: 'Year missing' });
     }
@@ -133,11 +130,11 @@ candidatesListsController.uploadList = async (req, res) => {
     }
 
     // Check does the template exists
-    const template = await templatesService.getTemplateById(templateId);
+    const template = await templatesService.getTemplateById(1);
     if (!template) {
       return res
         .status(404)
-        .send({ error: `Template with id, ${templateId}, not found!` });
+        .send({ error: 'SAIS template with id, 1, not found!' });
     }
 
     // Converts the excel file to JSON and deletes the temporary file
@@ -158,7 +155,10 @@ candidatesListsController.uploadList = async (req, res) => {
     }
 
     // Swap the JSON object key's to template ones
-    jsonData = await candidatesListsService.changeJsonKeys(template, jsonData);
+    jsonData = await templatesService.changeJsonKeys(template, jsonData);
+
+    // Remove unnecessary data and concat text: cells
+    jsonData = await templatesService.skimData(template, jsonData);
 
     // Passes the data to service for db insert
     const importDatabase = await candidatesService.createCandidates(
@@ -173,7 +173,7 @@ candidatesListsController.uploadList = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).send({
-      error: `Could not import the list: ${err}`,
+      error: `An internal error occurred while trying to upload the list: ${err}`,
     });
   }
   return res.status(201).send({
