@@ -4,7 +4,7 @@ const candidatesTagsService = {};
 
 /**
  * Returns all tags from database in JSON.
- * @returns {json}
+ * @returns {object}
  */
 candidatesTagsService.getAllCandidatesTags = async () => {
   const tags = await db.query(`
@@ -17,7 +17,7 @@ candidatesTagsService.getAllCandidatesTags = async () => {
 /**
  * Returns all course tags from database by course id in JSON.
  * @param {int} id
- * @returns {json}
+ * @returns {object}
  */
 candidatesTagsService.getTagsByCourseId = async (id) => {
   const tags = await db.query(
@@ -34,7 +34,7 @@ candidatesTagsService.getTagsByCourseId = async (id) => {
 /**
  * Single tag query from the database by id.
  * @param {int} id
- * @returns {json}
+ * @returns {object}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -55,7 +55,7 @@ candidatesTagsService.getTagById = async (id) => {
  * Single course tag query from the database by name.
  * @param {string} id
  * @param {int} courseId
- * @returns {json}
+ * @returns {object}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -74,8 +74,8 @@ candidatesTagsService.getTagByName = async (name, courseId) => {
 
 /**
  * Insert query, new tag into the database.
- * @param {json} newTag
- * @returns {json}
+ * @param {object} newTag
+ * @returns {object}
  * Returns JSON, new tag Id
  */
 candidatesTagsService.createTag = async (newTag) => {

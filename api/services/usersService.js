@@ -6,7 +6,7 @@ const usersService = {};
 
 /**
  * All users query from the database
- * @returns {json} If no records found returns empty JSON.
+ * @returns {object} If no records found returns empty JSON.
  * On success returns JSON
  */
 usersService.getUsers = async () => {
@@ -28,7 +28,7 @@ usersService.getUsers = async () => {
 /**
  * Single user query from the database by id
  * @param {int} id
- * @returns {(boolean|json)}
+ * @returns {(boolean|object)}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -53,8 +53,8 @@ usersService.getUserById = async (id) => {
 
 /**
  * Hash's the password and creates new user
- * @param {json} newUser
- * @returns {json}
+ * @param {object} newUser
+ * @returns {object}
  * Returns created user Id
  */
 usersService.createUser = async (newUser) => {
@@ -78,7 +78,7 @@ usersService.createUser = async (newUser) => {
 
 /**
  * Updates the user record by Id
- * @param {json} user
+ * @param {object} user
  * @returns {boolean}
  * On success returns true on failure false.
  */
@@ -156,8 +156,8 @@ usersService.deleteUserById = async (id) => {
 
 /**
  * Compares the login credentials and returns the bearer token
- * @param {json} login
- * @returns {json} On success returns JSON with token.
+ * @param {object} login
+ * @returns {object} On success returns JSON with token.
  * On failure returns JSON with error message.
  */
 usersService.login = async (login) => {

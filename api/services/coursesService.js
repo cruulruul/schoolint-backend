@@ -4,12 +4,12 @@ const coursesService = {};
 
 /**
  * Returns all courses from database in JSON.
- * @returns {json}
+ * @returns {object}
  */
 coursesService.getAllCourses = async () => {
   const courses = await db.query(`
     SELECT 
-      id, name
+      id, name, Template_id as templateId
     FROM Course;`);
   return courses;
 };
@@ -17,7 +17,7 @@ coursesService.getAllCourses = async () => {
 /**
  * Single course query from the database by id.
  * @param {int} id
- * @returns {json}
+ * @returns {object}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -25,7 +25,7 @@ coursesService.getCourseById = async (id) => {
   const course = await db.query(
     `
   SELECT 
-    id, name
+    id, name, Template_id as templateId
   FROM Course
   WHERE id = ?;`,
     [id],
@@ -37,7 +37,7 @@ coursesService.getCourseById = async (id) => {
 /**
  * Single course query from the database by name.
  * @param {string} name
- * @returns {json}
+ * @returns {object}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -45,7 +45,7 @@ coursesService.getCourseByName = async (name) => {
   const course = await db.query(
     `
     SELECT 
-      id, name
+      id, name, Template_id as templateId
     FROM Course
     WHERE name = ?;`,
     [name],
@@ -57,7 +57,7 @@ coursesService.getCourseByName = async (name) => {
 /**
  * Insert query, new course into the database.
  * @param {string} name
- * @returns {json}
+ * @returns {object}
  * Returns JSON, new tag Id
  */
 coursesService.createCourse = async (name) => {
@@ -77,6 +77,42 @@ coursesService.createCourseYear = async (courseId, year) => {
     [courseId, year],
   );
   return result.insertId;
+};
+
+/**
+ * Single course list query from the database by id.
+ * @param {int} id
+ * @returns {(object|boolean)}
+ * If no record found returns false
+ * On success returns an object.
+ */
+coursesService.getCourseListById = async (id) => {
+  const courseYearList = await db.query(
+    'SELECT Id, Course_id as courseId, year, enabled, created from CourseYear WHERE id=?',
+    [id],
+  );
+  if (!courseYearList[0]) {
+    return false;
+  }
+  return courseYearList[0];
+};
+
+/**
+ * Course template id query from the database.
+ * @param {int} id
+ * @returns {(object|boolean)}
+ * If no record found returns false
+ * On success returns an object.
+ */
+coursesService.getCourseTemplateId = async (id) => {
+  const templateId = await db.query(
+    'SELECT Template_id as templateId FROM Course WHERE id=?',
+    [id],
+  );
+  if (!templateId[0]) {
+    return false;
+  }
+  return templateId[0];
 };
 
 /**

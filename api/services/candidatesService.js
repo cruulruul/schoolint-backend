@@ -1,5 +1,5 @@
 const coursesService = require('./coursesService');
-const resultsService = require('./resultsService');
+const candidatesResultsService = require('./candidatesResultsService');
 const db = require('../../db');
 
 const candidatesService = {};
@@ -9,11 +9,10 @@ const candidatesService = {};
  * If admin, returns all active list candidates.
  * @param {id} userId
  * @param {string} userRole
- * @returns {json}
+ * @returns {object}
  * If no records found returns empty JSON.
  */
 candidatesService.getCandidates = async (userId, userRole) => {
-  // TODO Skim the query, no need so much data :S
   let sqlString = `
     SELECT 
     c.id,
@@ -24,17 +23,13 @@ candidatesService.getCandidates = async (userId, userRole) => {
       c.last_name as lastName,
       c.email,
       c.personal_id as personalId,
-      c.address as residence,
-      c.phone as phoneNumber,
       c.present,
-      (CONCAT(IFNULL(c.notes,""), 
-      IFNULL(CONCAT("\nexam1:", c.exam1),""), 
-          IFNULL(CONCAT("\nexam2:", c.exam2),""), 
-          IFNULL(CONCAT("\nexam3:", c.exam3),""), 
-          IFNULL(CONCAT("\nexam4:", c.exam4),""))) as notes
+      ir.room,
+      ir.time
     FROM Candidate c
     INNER JOIN CourseYear cy on c.CourseYear_id=cy.id
     INNER JOIN Course co on cy.Course_id=co.id
+    LEFT JOIN ImportResult ir on c.personal_id=ir.Candidate_personal_id
   `;
   if (userRole === 'Admin') {
     sqlString += 'WHERE cy.enabled = 1;';
@@ -52,9 +47,9 @@ candidatesService.getCandidates = async (userId, userRole) => {
  * @param {int} id
  * @param {int} userId
  * @param {string} userRole
- * @returns {(json|boolean)}
- * If no records found returns false
- * On success returns JSON.
+ * @returns {(object|boolean)}
+ * If no record found returns false
+ * On success returns an object.
  */
 candidatesService.getCandidateById = async (id, userId, userRole) => {
   let sqlString = `
@@ -63,6 +58,7 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
       (CONCAT(co.name, RIGHT(cy.year,char_length(cy.year)-2))) as specialityCode,
       co.name as courseName,
       cy.year,
+      cy.id as courseYearId,
       c.first_name as firstName,
       c.last_name as lastName,
       c.email,
@@ -90,7 +86,10 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
 
   // Get candidate scores
   if (candidate[0]) {
-    const results = await resultsService.getResultById(id);
+    const results = await candidatesResultsService.getResultsByPersonalIdid(
+      candidate[0].personalId,
+      candidate[0].courseYearId,
+    );
     Object.assign(candidate[0], results);
     const attachments = await candidatesService.getCandidateAttachments(id);
     Object.assign(candidate[0], attachments);
@@ -103,7 +102,7 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
 /**
  * Query for candidate attachments
  * @param {id} id
- * @returns {json} Returns JSON.
+ * @returns {object} Returns JSON.
  */
 candidatesService.getCandidateAttachments = async (id) => {
   const attachments = await db.query(
@@ -120,7 +119,7 @@ candidatesService.getCandidateAttachments = async (id) => {
 /**
  * Single candidate attachment query from the database by attachment id
  * @param {id} id
- * @returns {(boolena|json)}
+ * @returns {(boolena|object)}
  * If no records found returns false.
  * On success returns JSON.
  */
@@ -139,11 +138,11 @@ candidatesService.getCandidateAttachmentById = async (id) => {
 
 /**
  * Inserts candidates into database from the generated JSON data
- * @param {json} jsonData
- * @param {json} template
+ * @param {object} jsonData
+ * @param {object} template
  * @param {int} courseId
  * @param {int} listYear
- * @returns {(boolean|json)} On success: returns true, On failure: returns JSON with an error msg
+ * @returns {(boolean|object)} On success: returns true, On failure: returns JSON with an error msg
  */
 candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
   // Creates the course year record into database.
@@ -164,10 +163,10 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
       const data = jsonData[element];
       Object.keys(data).forEach(async (row) => {
         data[row].CourseYear_id = courseYearId;
-        const rowResul = await db.query('INSERT INTO Candidate SET ?', [
+        const rowResult = await db.query('INSERT INTO Candidate SET ?', [
           data[row],
         ]);
-        affectedRows += rowResul.affectedRows;
+        affectedRows += rowResult.affectedRows;
         loopCounter += 1;
       });
     });
@@ -194,9 +193,10 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
  */
 candidatesService.updateCandidate = async (candidate) => {
   const candidateToUpdate = {};
-  if (candidate.present) {
-    candidateToUpdate.present = candidate.present;
+  if (candidate.present === undefined) {
+    return false;
   }
+  candidateToUpdate.present = candidate.present;
   const result = await db.query('UPDATE Candidate SET ? WHERE id = ?', [
     candidateToUpdate,
     candidate.id,

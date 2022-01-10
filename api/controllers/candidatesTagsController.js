@@ -5,7 +5,7 @@ const candidatesTagsController = {};
 /**
  * Returns all tags from the database in JSON.
  * Example: "tags": [{id,name,courseId}]
- * @returns {any}
+ * @returns {object}
  * If no records found, empty JSON object "tags": []
  */
 candidatesTagsController.getAllCandidatesTags = async (req, res) => {
@@ -17,7 +17,7 @@ candidatesTagsController.getAllCandidatesTags = async (req, res) => {
  * Returns all given course tags from the database in JSON.
  * Example: "tags": [{id,name,courseId}]
  * @param {int} req.params.id
- * @returns {any}
+ * @returns {object}
  * If no records found, empty JSON object "tags": []
  */
 candidatesTagsController.getTagsByCourseId = async (req, res) => {
@@ -30,7 +30,7 @@ candidatesTagsController.getTagsByCourseId = async (req, res) => {
  * Creates new tag into the database.
  * @param {string} req.body.name
  * @param {int} req.body.courseId
- * @returns {json}
+ * @returns {object}
  * If the required data is missing returns status code 400
  * and error message: "Required data is missing".
  * If the id is not returned from the servive returns status 500.

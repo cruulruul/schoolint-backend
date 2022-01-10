@@ -6,7 +6,7 @@ const usersController = {};
  * Authenticates the user and returns the bearer token.
  * @param {string} req.body.email
  * @param {string} req.body.password
- * @returns {json} On success returns JSON with token and status 200.
+ * @returns {object} On success returns JSON with token and status 200.
  * On failure returns JSON with error message and status code 400 or 403.
  */
 usersController.login = async (req, res) => {
@@ -50,7 +50,7 @@ usersController.getUserRole = async (req, res) => {
 
 /**
  * Returns all users from the database
- * @returns {json} On success returns JSON and status code 200.
+ * @returns {object} On success returns JSON and status code 200.
  * On failure returns JSON with error msg and status code 500.
  */
 usersController.getUsers = async (req, res) => {
@@ -67,7 +67,7 @@ usersController.getUsers = async (req, res) => {
 /**
  * Returns single user record from the database by Id
  * @param {int} req.params.id
- * @returns {json} On failure returns JSON with error msg and status 404 or 500,
+ * @returns {object} On failure returns JSON with error msg and status 404 or 500,
  * On success returns JSON with user data and status code 200
  */
 usersController.getUserById = async (req, res) => {
@@ -97,7 +97,7 @@ usersController.getUserById = async (req, res) => {
  * @param {string} req.body.password
  * @param {int} [req.body.courseId] - Optional
  * @param {int} [req.body.roleId] - Optional
- * @returns {json} On failure returns JSON with error msg and status code 400, 409 or 500.
+ * @returns {object} On failure returns JSON with error msg and status code 400, 409 or 500.
  * On success returns JSON with created user Id and status 200
  */
 usersController.createUser = async (req, res) => {
@@ -156,7 +156,7 @@ usersController.createUser = async (req, res) => {
  * @param {string} [req.body.password] - Optional
  * @param {int} [req.body.couseId] - Optional
  * @param {int} [req.body.roleId] - Optional
- * @returns {json} On success returns JSON with msg success=true.
+ * @returns {object} On success returns JSON with msg success=true.
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 usersController.updateUser = async (req, res) => {
@@ -207,7 +207,7 @@ usersController.updateUser = async (req, res) => {
 /**
  * Deletes the user by id.
  * @param {int} req.params.id
- * @returns {res.status} On success returns status code 204.
+ * @returns {object} On success returns status code 204.
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 usersController.deleteUserById = async (req, res) => {

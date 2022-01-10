@@ -7,7 +7,7 @@ const templatesController = {};
  * Example: "templates": [{ "id", "name", "fields" : Array}]
  * @param {any} req
  * @param {any} res
- * @returns {json}
+ * @returns {object}
  * If no result returns status code 404 with
  * error message "No templates found".
  * On success, returns JSON and status code 200.
@@ -29,7 +29,7 @@ templatesController.getTemplates = async (req, res) => {
  * Example: "templates": [{ "id", "name", "fields" : Array}]
  * @param {int} req.params.id
  * @param {any} res
- * @returns {json}
+ * @returns {object}
  * If no template found returns status code 404 with
  * error message "No template found with id: {id}".
  * On success, returns JSON and status code 200.
@@ -52,7 +52,7 @@ templatesController.getTemplateById = async (req, res) => {
  * @param {string} req.body.name
  * @param {array} req.body.fields
  * @param {any} res
- * @returns {json}
+ * @returns {object}
  * If the required data is missing returns status code 400
  * and error message: "Required data is missing".
  * If the id is not returned from the servive returns status 500.
@@ -83,7 +83,6 @@ templatesController.createTemplates = async (req, res) => {
 /**
  * Deletes single template record by Id
  * @param {int} req.params.id
- * @param {any} res
  * If no template found with the given id, returns status code 404 and error message.
  * If deleting fails, returns status code 500 and error message.
  * On success, returns 204.

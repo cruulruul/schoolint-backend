@@ -9,7 +9,7 @@ const candidatesController = {};
  * All candidates query from database
  * @param {int} req.userId
  * @param {string} req.userRole
- * @returns {json} On success returns JSON.
+ * @returns {object} On success returns JSON.
  * On failure returns JSON with error msg and status code 500.
  */
 candidatesController.getCandidates = async (req, res) => {
@@ -29,7 +29,7 @@ candidatesController.getCandidates = async (req, res) => {
  * @param {int} req.params.id
  * @param {int} req.userId
  * @param {string} req.userRole
- * @returns {json} On failure returns JSON with error msg and status 404 or 500,
+ * @returns {object} On failure returns JSON with error msg and status 404 or 500,
  * On success returns JSON with user data and status code 200
  */
 candidatesController.getCandidateById = async (req, res) => {
@@ -62,7 +62,7 @@ candidatesController.getCandidateById = async (req, res) => {
  * @param {int} req.userId
  * @param {string} req.userRole
  * @param {boolean} [req.body.present] - Optional
- * @returns {json} On success returns JSON with msg success=true.
+ * @returns {object} On success returns JSON with msg success=true.
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 candidatesController.updateCandidate = async (req, res) => {
@@ -115,7 +115,7 @@ candidatesController.updateCandidate = async (req, res) => {
  * @param {int} req.userId
  * @param {string} req.userRole
  * @param {int} req.candidateId
- * @returns {json} On success returns JSON success with an attachment id and status 201.
+ * @returns {object} On success returns JSON success with an attachment id and status 201.
  * On failure returns JSON with error message and status code 400, 404, 500.
  */
 candidatesController.uploadAttachment = async (req, res) => {
@@ -186,7 +186,7 @@ candidatesController.uploadAttachment = async (req, res) => {
  * Deletes the candidate attachment by id and candidate id
  * @param {int} req.params.id
  * @param {int} req.params.candidateId
- * @returns {any} On success returns status code 204.
+ * @returns {object} On success returns status code 204.
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 candidatesController.deleteAttachment = async (req, res) => {
@@ -239,7 +239,7 @@ candidatesController.deleteAttachment = async (req, res) => {
 /**
  * Returns the attachment file from server
  * @param {int} req.params.attachmentId
- * @returns {(file|json)} On success returns the file
+ * @returns {(file|object)} On success returns the file
  * On failure returns JSON with error msg and status code 400, 404 or 500.
  */
 candidatesController.getAttachmentFile = async (req, res) => {
