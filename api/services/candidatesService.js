@@ -87,7 +87,7 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
   }
   const candidate = await db.query(sqlString);
 
-  // Get candidate test results
+  // Get candidate test results and interview results by userID
   if (candidate[0]) {
     const results = await candidatesResultsService.getResultsByPersonalIdid(
       candidate[0].personalId,
@@ -96,9 +96,19 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
     Object.assign(candidate[0], results);
     const attachments = await candidatesService.getCandidateAttachments(id);
     Object.assign(candidate[0], attachments);
+    const userInterviewResults = await candidatesResultsService.getInterviewResultsByUserId(
+      id,
+      userId,
+    );
+    if (userInterviewResults) {
+      Object.assign(candidate[0], { interviewResult: userInterviewResults });
+    }
   } else {
     return false;
   }
+
+  // Get candidate interview result by userId
+
   return candidate[0];
 };
 

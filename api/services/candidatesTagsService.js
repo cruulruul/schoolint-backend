@@ -9,8 +9,10 @@ const candidatesTagsService = {};
 candidatesTagsService.getAllCandidatesTags = async () => {
   const tags = await db.query(`
     SELECT 
-      id, name, Course_id as courseId
-    FROM Tag`);
+      t.id, t.name, t.Course_id as courseId, c.name as specialityCode
+    FROM schoolint.Tag t
+    INNER JOIN schoolint.Course c on t.Course_id = c.id
+    WHERE t.deleted = 0;`);
   return tags;
 };
 
@@ -23,9 +25,10 @@ candidatesTagsService.getTagsByCourseId = async (id) => {
   const tags = await db.query(
     `
     SELECT 
-      id, name, Course_id as courseId
-    FROM Tag
-    WHERE Course_id = ?`,
+      t.id, t.name, t.Course_id as courseId, c.name as specialityCode
+    FROM schoolint.Tag t
+    INNER JOIN schoolint.Course c on t.Course_id = c.id
+    WHERE t.deleted = 0 and t.Course_id = ?`,
     [id],
   );
   return tags;
@@ -42,7 +45,7 @@ candidatesTagsService.getTagById = async (id) => {
   const tag = await db.query(
     `
   SELECT 
-    id, name, Course_id as courseId
+    id, name, Course_id as courseId, deleted
   FROM Tag
   WHERE id = ?`,
     [id],
@@ -88,14 +91,16 @@ candidatesTagsService.createTag = async (newTag) => {
 };
 
 /**
- * Delete query, remove tag by id
+ * Delete query, set tag deleted by id
  * @param {int} id
  * @returns {boolean}
  * If rowcount is not 1, return false.
  * On success return true.
  */
 candidatesTagsService.deleteTagById = async (id) => {
-  const result = await db.query('DELETE FROM Tag WHERE id = ?;', [id]);
+  const result = await db.query('UPDATE SET Tag deleted = 1 WHERE id = ?;', [
+    id,
+  ]);
   if (result.affectedRows === 1) {
     return true;
   }

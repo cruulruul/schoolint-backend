@@ -336,7 +336,7 @@ templatesService.skimData = async (templateObject, data) => {
     newData[Object.keys(template)[i]] = {};
     for (let row = 0; row < Object.keys(sheetData).length; row += 1) {
       const rowData = sheetData[row];
-      let rowText = '';
+      const rowTextObject = {};
       const newRowData = {};
       Object.keys(rowData).forEach((key) => {
         const value = rowData[key];
@@ -349,8 +349,12 @@ templatesService.skimData = async (templateObject, data) => {
           }
         });
         if (key.substring(0, 5) === 'text:') {
-          rowText = rowText.concat(`${key.substring(5)}: ${value}`, '\n');
-          newRowData.text = rowText;
+          // rowText = JSON.parse(
+          //   rowText.concat(`{ "${key.substring(5)}": "${value}"}`),
+          // );
+          rowTextObject[key.substring(5)] = value;
+
+          newRowData.text = JSON.stringify(rowTextObject);
         }
       });
       newData[Object.keys(data)[i]][row] = newRowData;
