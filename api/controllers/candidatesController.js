@@ -1,5 +1,5 @@
 const path = require('path');
-const { candidatesService } = require('../services');
+const { candidatesService, candidatesResultsService } = require('../services');
 const { upload } = require('../middlewares');
 const config = require('../../config');
 
@@ -68,13 +68,27 @@ candidatesController.getCandidateById = async (req, res) => {
 candidatesController.updateCandidate = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { userId, userRole } = req;
-  const { present } = req.body;
+  const present = parseInt(req.body.present, 10);
+  const { interviewResult } = req.body;
 
-  if (!id && present === undefined) {
+  if (!id) {
     return res.status(400).json({
-      error: 'Required data is missing',
+      error: `Not valid id: ${id}`,
     });
   }
+
+  if (!(present || interviewResult)) {
+    return res.status(400).json({
+      error: 'Required data is missing (present or interviewResult Object)',
+    });
+  }
+
+  if (!(userId && userRole)) {
+    return res.status(400).json({
+      error: 'Required userId or userRole is missing!',
+    });
+  }
+
   try {
     const candidate = await candidatesService.getCandidateById(
       id,
@@ -91,13 +105,50 @@ candidatesController.updateCandidate = async (req, res) => {
       present,
     };
 
-    const success = await candidatesService.updateCandidate(candidateToUpdate);
-    if (!success) {
-      return res.status(500).json({
-        error:
-          'An internal error occurred while trying to update the candidate',
-      });
+    if (present) {
+      const success = await candidatesService.updateCandidate(
+        candidateToUpdate,
+      );
+      if (!success) {
+        return res.status(500).json({
+          error:
+            'An internal error occurred while trying to update the candidate',
+        });
+      }
     }
+    if (interviewResult) {
+      if (Object.keys(interviewResult).length > 0) {
+        const interviewResultObject = await candidatesResultsService.getInterviewResultsByUserId(
+          id,
+          userId,
+        );
+        if (interviewResultObject) {
+          const updateSuccess = await candidatesResultsService.updateInterviewResult(
+            id,
+            userId,
+            interviewResultObject.id,
+            interviewResult,
+          );
+          if (updateSuccess.error) {
+            return res.status(500).json({
+              error: updateSuccess.error,
+            });
+          }
+        } else {
+          const insertSuccess = await candidatesResultsService.insertInterviewResult(
+            id,
+            userId,
+            interviewResult,
+          );
+          if (insertSuccess.error) {
+            return res.status(500).json({
+              error: insertSuccess.error,
+            });
+          }
+        }
+      }
+    }
+
     return res.status(200).json({
       success: true,
     });
