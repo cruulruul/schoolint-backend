@@ -413,7 +413,7 @@ COMMIT;
 START TRANSACTION;
 USE `schoolint`;
 INSERT INTO `schoolint`.`User` (`id`, `first_name`, `last_name`, `email`, `password`, `UserRole_id`, `Course_id`, `deleted`, `created`) VALUES (DEFAULT, 'Admin', 'User', 'admin@yourdomain.com', '$2b$10$A6Hm3hPbnogpdps8NyYIS..DMC.tkWFkwpj4QTiOv/C/ttcbrmQyq', 1, NULL, DEFAULT, DEFAULT);
-INSERT INTO `schoolint`.`User` (`id`, `first_name`, `last_name`, `email`, `password`, `UserRole_id`, `Course_id`, `deleted`, `created`) VALUES (DEFAULT, 'Test', 'User', 'test@yourdomain.com', '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai', 2, 1, DEFAULT, DEFAULT);
+INSERT INTO `schoolint`.`User` (`id`, `first_name`, `last_name`, `email`, `password`, `UserRole_id`, `Course_id`, `deleted`, `created`) VALUES (DEFAULT, 'Test', 'User', 'test@yourdomain.com', '$2b$10$2o5MRdjsY.0UzbT2zYUxSO8gmkhB3yNOx7cf.9FTA5yYLvYao9/Ai', 2, 2, DEFAULT, DEFAULT);
 
 COMMIT;
 
