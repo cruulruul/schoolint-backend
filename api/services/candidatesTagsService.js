@@ -98,7 +98,7 @@ candidatesTagsService.createTag = async (newTag) => {
  * On success return true.
  */
 candidatesTagsService.deleteTagById = async (id) => {
-  const result = await db.query('UPDATE SET Tag deleted = 1 WHERE id = ?;', [
+  const result = await db.query('UPDATE Tag SET deleted = 1 WHERE id = ?;', [
     id,
   ]);
   if (result.affectedRows === 1) {
