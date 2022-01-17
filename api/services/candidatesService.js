@@ -178,7 +178,7 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
   let affectedRows = 0;
   let loopCounter = 0;
   try {
-    await db.query('START TRANSACTION');
+    // await db.query('START TRANSACTION');
     Object.keys(jsonData).forEach(async (element) => {
       const data = jsonData[element];
       Object.keys(data).forEach(async (row) => {
@@ -190,8 +190,8 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
         loopCounter += 1;
       });
     });
-    await db.query('COMMIT');
-    if (affectedRows !== loopCounter) await db.query('ROLLBACK');
+    // await db.query('COMMIT');
+    // if (affectedRows !== loopCounter) await db.query('ROLLBACK');
   } catch (err) {
     return {
       error: `Something went wrong while inserting the records into the database, ${err}`,
