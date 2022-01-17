@@ -27,11 +27,12 @@ candidatesService.getCandidates = async (userId, userRole) => {
       c.personal_id as personalId,
       c.present,
       ir.room,
-      ir.time
+      ir.time,
+      ir.final_score as testScore
     FROM Candidate c
     INNER JOIN CourseYear cy on c.CourseYear_id=cy.id
     INNER JOIN Course co on cy.Course_id=co.id
-    LEFT JOIN ImportResult ir on c.personal_id=ir.Candidate_personal_id
+    LEFT JOIN ImportResult ir on c.personal_id=ir.Candidate_personal_id and cy.id=ir.CourseYear_id
   `;
   if (userRole === 'Admin') {
     sqlString += 'WHERE cy.enabled = 1;';
@@ -41,6 +42,12 @@ candidatesService.getCandidates = async (userId, userRole) => {
     and u.id=${userId};`;
   }
   const candidates = await db.query(sqlString);
+  if (candidates.length > 0) {
+    const upgradedCandidates = await candidatesResultsService.calculateScore(
+      candidates,
+    );
+    return upgradedCandidates;
+  }
   return candidates;
 };
 
