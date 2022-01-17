@@ -125,6 +125,28 @@ candidatesResultsService.getInterviewResultsByUserId = async (id, userId) => {
   return interviewResult[0];
 };
 
+candidatesResultsService.getCandidateInterviewResults = async (id) => {
+  const interviewResults = await db.query(
+    `
+  SELECT
+    id,
+    created, 
+    comment, 
+    interview_cat1 as interviewCat1,
+    interview_cat2 as interviewCat2,
+    interview_cat3 as interviewCat3,
+    interview_cat4 as interviewCat4,
+    interview_cat5 as interviewCat5,
+    interview_cat6 as interviewCat6,
+    interview_cat7 as interviewCat7,
+    interview_cat8 as interviewCat8
+  FROM InterviewResult
+  WHERE Candidate_id = ?;`,
+    [id],
+  );
+  return interviewResults;
+};
+
 candidatesResultsService.updateInterviewResult = async (
   candidateId,
   userId,
@@ -268,6 +290,55 @@ candidatesResultsService.insertInterviewResultTags = async (
     );
   });
   return true;
+};
+
+candidatesResultsService.calculateScore = async (candidates) => {
+  const newCandidates = [];
+
+  for (let i = 0; i < candidates.length; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const results = await candidatesResultsService.getCandidateInterviewResults(
+      candidates[i].id,
+    );
+    const newRow = candidates[i];
+    if (results.length > 0) {
+      let interviewSum = 0;
+      let finalScore = 0;
+
+      // RIF calculations
+      if (newRow.courseId === 1) {
+        results.forEach((intRes) => {
+          const tmpSum =
+            (intRes.interviewCat1 +
+              intRes.interviewCat2 +
+              intRes.interviewCat3) *
+            2.08333333333333;
+          interviewSum += tmpSum;
+        });
+        interviewSum = Math.round(interviewSum);
+        finalScore = newRow.testScore / 2 + interviewSum;
+      }
+
+      // LO calculations
+      if (newRow.courseId === 2) {
+        results.forEach((intRes) => {
+          const tmpSum =
+            intRes.interviewCat1 +
+            intRes.interviewCat2 +
+            intRes.interviewCat3 +
+            intRes.interviewCat4;
+          interviewSum += tmpSum;
+        });
+        interviewSum /= results.length;
+        finalScore = newRow.testScore + interviewSum;
+      }
+
+      newRow.interviewScore = interviewSum;
+      newRow.finalScore = finalScore;
+    }
+    newCandidates.push(newRow);
+  }
+  return newCandidates;
 };
 
 module.exports = candidatesResultsService;

@@ -46,7 +46,9 @@ candidatesResultsController.uploadResults = async (req, res) => {
     // Check req.body related
     const courseYearId = parseInt(req.body.id, 10);
     if (!courseYearId) {
-      return res.status(400).send({ error: 'CourseYearId missing' });
+      // delete the file
+      fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
+      return res.status(400).send({ error: 'id missing' });
     }
 
     // Check does the course year list record exists
