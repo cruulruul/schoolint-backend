@@ -8,7 +8,7 @@ jwtService.sign = async (user) => {
     id: user.id,
     role: user.role,
   };
-  const token = await jwt.sign(payload, jwtSecret, { expiresIn: 60 * 60 });
+  const token = await jwt.sign(payload, jwtSecret, { expiresIn: '10h' });
   return token;
 };
 

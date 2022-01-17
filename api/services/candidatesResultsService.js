@@ -59,31 +59,47 @@ candidatesResultsService.addResultsToCandidates = async (
   courseYearId,
   jsonData,
 ) => {
-  let affectedRows = 0;
-  let loopCounter = 0;
+  let duplicatePersonalId;
   try {
     await db.query('START TRANSACTION;');
-    Object.keys(jsonData).forEach(async (element) => {
-      const data = jsonData[element];
-      Object.keys(data).forEach(async (row) => {
-        data[row].CourseYear_id = courseYearId;
-        const rowResult = await db.query('INSERT INTO ImportResult SET ?;', [
-          data[row],
-        ]);
-        affectedRows += rowResult.affectedRows;
-        loopCounter += 1;
+    if (!duplicatePersonalId) {
+      Object.keys(jsonData).forEach(async (element) => {
+        const data = jsonData[element];
+        if (!duplicatePersonalId) {
+          Object.keys(data).forEach(async (row) => {
+            // Check dublicates
+            if (!duplicatePersonalId) {
+              if (data[row].Candidate_personal_id) {
+                const duplicateResult = await candidatesResultsService.checkDBDublicates(
+                  data[row].Candidate_personal_id,
+                  courseYearId,
+                );
+                if (duplicateResult) {
+                  duplicatePersonalId = data[row].Candidate_personal_id;
+                }
+              }
+              if (!duplicatePersonalId) {
+                data[row].CourseYear_id = courseYearId;
+                await db.query('INSERT INTO ImportResult SET ?;', [data[row]]);
+              }
+            }
+          });
+        }
       });
-    });
-    await db.query('COMMIT;');
-    if (affectedRows !== loopCounter) await db.query('ROLLBACK;');
+    }
+    if (!duplicatePersonalId) {
+      await db.query('COMMIT;');
+    } else {
+      await db.query('ROLLBACK;');
+    }
   } catch (err) {
     return {
       error: `Something went wrong while inserting the records into the database, ${err}`,
     };
   }
-  if (affectedRows !== loopCounter) {
+  if (duplicatePersonalId) {
     return {
-      error: `Inserted rows amount is not the same as rows from the excel file: inserted ${affectedRows}, rows in file (all sheets) ${loopCounter}`,
+      error: `Found dublicate presonalId(${duplicatePersonalId}), reverted the import!`,
     };
   }
   return true;
@@ -339,6 +355,20 @@ candidatesResultsService.calculateScore = async (candidates) => {
     newCandidates.push(newRow);
   }
   return newCandidates;
+};
+
+candidatesResultsService.checkDBDublicates = async (
+  personalId,
+  courseYearId,
+) => {
+  const match = await candidatesResultsService.getResultsByPersonalIdid(
+    personalId,
+    courseYearId,
+  );
+  if (match) {
+    return match;
+  }
+  return false;
 };
 
 module.exports = candidatesResultsService;
