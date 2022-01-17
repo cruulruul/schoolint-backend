@@ -181,4 +181,33 @@ candidatesListsController.uploadList = async (req, res) => {
   });
 };
 
+candidatesListsController.deleteList = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+  try {
+    // Check if list exists
+    const list = await candidatesListsService.getListById(id);
+    if (!list) {
+      return res.status(404).json({
+        error: `No list found with id: ${id}`,
+      });
+    }
+    const success = await candidatesListsService.deleteListById(id);
+    if (!success) {
+      return res.status(500).json({
+        error: 'An internal error occurred while trying to delete the list',
+      });
+    }
+    return res.status(204).end();
+  } catch (err) {
+    return res.status(500).send({
+      error: `An internal error occurred while trying to delete the list: ${err}`,
+    });
+  }
+};
+
 module.exports = candidatesListsController;
