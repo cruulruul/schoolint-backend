@@ -62,7 +62,6 @@ candidatesListsService.deleteListById = async (id) => {
   const candidates = await candidatesService.getListCandidates(id);
   if (candidates.length > 0) {
     for (let index = 0; index < candidates.length; index += 1) {
-      console.log('kustutame inteka tage');
       await db.query(
         `DELETE FROM InterviewResult_has_Tag 
           Where InterviewResult_id in 
@@ -72,7 +71,6 @@ candidatesListsService.deleteListById = async (id) => {
         Where ir.Candidate_id = ?);`,
         [candidates[index].id],
       );
-      console.log('kustutame inteka tulemusi');
       await db.query(
         `DELETE FROM InterviewResult WHERE Candidate_id = ?;
       `,
@@ -82,14 +80,10 @@ candidatesListsService.deleteListById = async (id) => {
         candidates[index].id,
       ]);
     }
-    console.log('kustutame importi tulemusi');
     await db.query('DELETE FROM ImportResult WHERE CourseYear_id = ?;', [id]);
-    console.log('kustutame kõik kandidaadid');
     await db.query('DELETE FROM Candidate Where CourseYear_id = ?', [id]);
-    console.log('kustutame kursuse aasta');
     await db.query('DELETE FROM CourseYear Where id = ?', [id]);
   }
-  console.log('returnime');
   return true;
 };
 
