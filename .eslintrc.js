@@ -13,5 +13,6 @@ module.exports = {
     'no-console': 'off',
     'no-underscore-dangle': 'off',
     'operator-linebreak': 'off',
+    'no-await-in-loop': 'off',
   },
 };
