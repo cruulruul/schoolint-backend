@@ -13,8 +13,7 @@ router
   .use(isLoggedIn)
   .get('/', isAdmin, candidatesListsController.getAllCandidatesLists)
   .patch('/:id', candidatesListsController.updateCandidateListById)
-  .post('/', candidatesListsController.uploadList);
-// TODO Deleting the list with all candidates, result etc
-// .delete('/:id', candidatesListsController.deleteList)
+  .post('/', candidatesListsController.uploadList)
+  .delete('/:id', candidatesListsController.deleteList);
 
 module.exports = router;

@@ -272,4 +272,16 @@ candidatesService.deleteAttachment = async (id, candidateId) => {
   return false;
 };
 
+candidatesService.getListCandidates = async (listId) => {
+  const candidates = await db.query(
+    `SELECT
+      c.id,
+      c.CourseYear_id as courseYearId
+    FROM Candidate c
+    WHERE c.CourseYear_id = ?`,
+    [listId],
+  );
+  return candidates;
+};
+
 module.exports = candidatesService;
