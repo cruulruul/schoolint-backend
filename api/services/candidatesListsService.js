@@ -80,10 +80,10 @@ candidatesListsService.deleteListById = async (id) => {
         candidates[index].id,
       ]);
     }
-    await db.query('DELETE FROM ImportResult WHERE CourseYear_id = ?;', [id]);
-    await db.query('DELETE FROM Candidate Where CourseYear_id = ?', [id]);
-    await db.query('DELETE FROM CourseYear Where id = ?', [id]);
   }
+  await db.query('DELETE FROM ImportResult WHERE CourseYear_id = ?;', [id]);
+  await db.query('DELETE FROM Candidate Where CourseYear_id = ?', [id]);
+  await db.query('DELETE FROM CourseYear Where id = ?', [id]);
   return true;
 };
 
