@@ -27,10 +27,6 @@ candidatesResultsService.getResultsByPersonalIdid = async (
     [personalId, courseYearId],
   );
 
-  // if (result[0].background) {
-  //   result[0].background = JSON.parse(result[0].background);
-  // }
-
   const catScores = await db.query(
     `
     SELECT
@@ -61,7 +57,6 @@ candidatesResultsService.addResultsToCandidates = async (
 ) => {
   let duplicatePersonalId;
   try {
-    await db.query('START TRANSACTION;');
     if (!duplicatePersonalId) {
       Object.keys(jsonData).forEach(async (element) => {
         const data = jsonData[element];
@@ -86,11 +81,6 @@ candidatesResultsService.addResultsToCandidates = async (
           });
         }
       });
-    }
-    if (!duplicatePersonalId) {
-      await db.query('COMMIT;');
-    } else {
-      await db.query('ROLLBACK;');
     }
   } catch (err) {
     return {

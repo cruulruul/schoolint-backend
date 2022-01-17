@@ -215,7 +215,7 @@ templatesService.validateJson = async (templateObject, data) => {
       matchingHeaders.length !== skimmedTemplateHeaders.length
     ) {
       return {
-        error: `Üleslaetud exceli failis puuduvad vajalikul sheet'il nõutud päised. Nõutud: ${skimmedTemplateHeaders.sort()}`,
+        error: `Required sheets are missing, required: ${skimmedTemplateHeaders.sort()}`,
       };
     }
   }
@@ -336,8 +336,13 @@ templatesService.skimData = async (templateObject, data) => {
     newData[Object.keys(template)[i]] = {};
     for (let row = 0; row < Object.keys(sheetData).length; row += 1) {
       const rowData = sheetData[row];
-      const rowTextObject = {};
       const newRowData = {};
+
+      // For string
+      let rowText = '';
+      // for JSON
+      // const rowTextObject = {};
+
       Object.keys(rowData).forEach((key) => {
         const value = rowData[key];
         const newKey = key;
@@ -352,9 +357,13 @@ templatesService.skimData = async (templateObject, data) => {
           // rowText = JSON.parse(
           //   rowText.concat(`{ "${key.substring(5)}": "${value}"}`),
           // );
-          rowTextObject[key.substring(5)] = value;
+          // For JSON string
+          // rowTextObject[key.substring(5)] = value;
+          // newRowData.text = JSON.stringify(rowTextObject);
 
-          newRowData.text = JSON.stringify(rowTextObject);
+          // For string
+          rowText = rowText.concat(`"${key.substring(5)}":  "${value}"`);
+          newRowData.text = rowText;
         }
       });
       newData[Object.keys(data)[i]][row] = newRowData;
