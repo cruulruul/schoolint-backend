@@ -60,31 +60,54 @@ candidatesListsService.updateCandidateListById = async (list) => {
 
 candidatesListsService.deleteListById = async (id) => {
   const candidates = await candidatesService.getListCandidates(id);
-  if (candidates.length > 0) {
-    for (let index = 0; index < candidates.length; index += 1) {
-      await db.query(
-        `DELETE FROM InterviewResult_has_Tag 
-          Where InterviewResult_id in 
-          (SELECT iht.InterviewResult_id
-        FROM InterviewResult_has_Tag iht
-        INNER JOIN InterviewResult ir on ir.id=iht.InterviewResult_id
-        Where ir.Candidate_id = ?);`,
-        [candidates[index].id],
-      );
-      await db.query(
-        `DELETE FROM InterviewResult WHERE Candidate_id = ?;
-      `,
-        [candidates[index].id],
-      );
-      await db.query('DELETE FROM CandidateAttachment WHERE candidate_id = ?', [
-        candidates[index].id,
-      ]);
-    }
-  }
-  await db.query('DELETE FROM ImportResult WHERE CourseYear_id = ?;', [id]);
-  await db.query('DELETE FROM Candidate Where CourseYear_id = ?', [id]);
-  await db.query('DELETE FROM CourseYear Where id = ?', [id]);
-  return true;
+
+  const dbQuery = await new Promise((resolve, reject) => {
+    db.getConnection((err, connection) => {
+      if (candidates.length > 0) {
+        connection.beginTransaction();
+        for (let index = 0; index < candidates.length; index += 1) {
+          connection.query(
+            `DELETE FROM InterviewResult_has_Tag 
+              Where InterviewResult_id in 
+              (SELECT iht.InterviewResult_id
+            FROM InterviewResult_has_Tag iht
+            INNER JOIN InterviewResult ir on ir.id=iht.InterviewResult_id
+            Where ir.Candidate_id = ?);`,
+            [candidates[index].id],
+          );
+          connection.query(
+            `DELETE FROM InterviewResult WHERE Candidate_id = ?;
+          `,
+            [candidates[index].id],
+          );
+          connection.query(
+            'DELETE FROM CandidateAttachment WHERE candidate_id = ?',
+            [candidates[index].id],
+          );
+        }
+        connection.query('DELETE FROM ImportResult WHERE CourseYear_id = ?;', [
+          id,
+        ]);
+        connection.query('DELETE FROM Candidate Where CourseYear_id = ?', [id]);
+        connection.query('DELETE FROM CourseYear Where id = ?', [id]);
+        if (err) {
+          if (connection) {
+            connection.rollback();
+            connection.end();
+          }
+          const error = {
+            error: err,
+          };
+          reject(error);
+        } else {
+          connection.commit();
+          resolve(true);
+        }
+        connection.release();
+      }
+    });
+  });
+  return dbQuery;
 };
 
 module.exports = candidatesListsService;

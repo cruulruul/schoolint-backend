@@ -197,9 +197,9 @@ candidatesListsController.deleteList = async (req, res) => {
       });
     }
     const success = await candidatesListsService.deleteListById(id);
-    if (!success) {
+    if (success.error) {
       return res.status(500).json({
-        error: 'An internal error occurred while trying to delete the list',
+        error: `An internal error occurred while trying to delete the list: ${success.error}`,
       });
     }
     return res.status(204).end();

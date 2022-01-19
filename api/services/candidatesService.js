@@ -175,28 +175,20 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
       error: 'Unable to insert the course year record into the database',
     };
   }
-  let affectedRows = 0;
-  let loopCounter = 0;
   try {
     Object.keys(jsonData).forEach(async (element) => {
       const data = jsonData[element];
       Object.keys(data).forEach(async (row) => {
         data[row].CourseYear_id = courseYearId;
-        const rowResult = await db.query('INSERT INTO Candidate SET ?', [
-          data[row],
-        ]);
-        affectedRows += rowResult.affectedRows;
-        loopCounter += 1;
+        await db.getConnection((err, connection) => {
+          connection.query('INSERT INTO Candidate SET ?', [data[row]]);
+          connection.release();
+        });
       });
     });
   } catch (err) {
     return {
       error: `Something went wrong while inserting the records into the database, ${err}`,
-    };
-  }
-  if (affectedRows !== loopCounter) {
-    return {
-      error: `Inserted rows are not the same as rows from the excel file: inserted ${affectedRows}, rows in file (all sheets) ${loopCounter}`,
     };
   }
   return true;
