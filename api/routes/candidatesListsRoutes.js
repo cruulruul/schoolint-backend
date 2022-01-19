@@ -12,8 +12,9 @@ router
   .use(cors())
   .use(isLoggedIn)
   .get('/', isAdmin, candidatesListsController.getAllCandidatesLists)
-  .patch('/:id', candidatesListsController.updateCandidateListById)
-  .post('/', candidatesListsController.uploadList)
-  .delete('/:id', candidatesListsController.deleteList);
+  .get('/export/:id', isAdmin, candidatesListsController.exportList)
+  .patch('/:id', isAdmin, candidatesListsController.updateCandidateListById)
+  .post('/', isAdmin, candidatesListsController.uploadList)
+  .delete('/:id', isAdmin, candidatesListsController.deleteList);
 
 module.exports = router;
