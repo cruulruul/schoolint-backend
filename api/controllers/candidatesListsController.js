@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const {
   candidatesListsService,
   templatesService,
@@ -208,6 +209,18 @@ candidatesListsController.deleteList = async (req, res) => {
       error: `An internal error occurred while trying to delete the list: ${err}`,
     });
   }
+};
+
+candidatesListsController.exportList = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!id) {
+    return res.status(400).json({
+      error: `Not valid id: ${id}`,
+    });
+  }
+  const fileName = 'MOCK_DATA_200.xlsx';
+  const fileLocation = path.join(config.baseDir, '/uploads/', fileName);
+  return res.sendFile(fileLocation);
 };
 
 module.exports = candidatesListsController;
