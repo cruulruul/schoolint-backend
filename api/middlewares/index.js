@@ -3,6 +3,7 @@ const isLoggedIn = require('./isLoggedIn');
 const isAdmin = require('./isAdmin');
 const upload = require('./upload');
 const excelParser = require('./excelParser');
+const jsonToExcel = require('./jsonToExcel');
 
 module.exports = {
   validators,
@@ -10,4 +11,5 @@ module.exports = {
   isAdmin,
   upload,
   excelParser,
+  jsonToExcel,
 };
