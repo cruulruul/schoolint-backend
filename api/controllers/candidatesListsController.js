@@ -6,7 +6,7 @@ const {
   candidatesService,
   coursesService,
 } = require('../services');
-const { upload, excelParser } = require('../middlewares');
+const { upload, excelParser, jsonToExcel } = require('../middlewares');
 const config = require('../../config');
 
 const candidatesListsController = {};
@@ -213,14 +213,47 @@ candidatesListsController.deleteList = async (req, res) => {
 
 candidatesListsController.exportList = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+
   if (!id) {
     return res.status(400).json({
       error: `Not valid id: ${id}`,
     });
   }
-  const fileName = 'MOCK_DATA_200.xlsx';
-  const fileLocation = path.join(config.baseDir, '/uploads/', fileName);
-  return res.sendFile(fileLocation);
+
+  try {
+    const list = await candidatesListsService.getListById(id);
+    if (!list) {
+      return res.status(404).json({
+        error: `No list found with: ${id}`,
+      });
+    }
+
+    const courseName = `${list.listCode}${list.year}`;
+
+    const candidates = await candidatesService.getCandidates(
+      null,
+      null,
+      true,
+      id,
+    );
+
+    const fieldNames = [
+      'personalId|Isikukood',
+      'firstName|Eesnimi',
+      'lastName|Perekonnanimi',
+      'testScore|Testitulemus',
+      'interviewScore|Intervjuu tulemus',
+      'finalScore|Lõpptulemus',
+    ];
+
+    const file = await jsonToExcel(courseName, fieldNames, candidates);
+    const fileLocation = path.join(config.baseDir, '/uploads/', file);
+    return res.download(fileLocation, file);
+  } catch (err) {
+    return res.status(500).send({
+      error: `An internal error occurred while trying to export the list: ${err}`,
+    });
+  }
 };
 
 module.exports = candidatesListsController;

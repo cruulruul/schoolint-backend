@@ -318,7 +318,7 @@ candidatesController.getAttachmentFile = async (req, res) => {
       });
     }
     const fileLocation = path.join(config.baseDir, '/uploads/', fileName);
-    return res.sendFile(fileLocation);
+    return res.download(fileLocation, fileName);
   } catch (err) {
     return res.status(500).send({
       error: `An internal error occurred while trying to fetch the attachment: ${err}`,

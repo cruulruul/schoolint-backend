@@ -12,7 +12,12 @@ const candidatesService = {};
  * @returns {object}
  * If no records found returns empty JSON.
  */
-candidatesService.getCandidates = async (userId, userRole) => {
+candidatesService.getCandidates = async (
+  userId,
+  userRole,
+  listExport = false,
+  courseYearId = null,
+) => {
   let sqlString = `
     SELECT 
     c.id,
@@ -34,13 +39,16 @@ candidatesService.getCandidates = async (userId, userRole) => {
     INNER JOIN Course co on cy.Course_id=co.id
     LEFT JOIN ImportResult ir on c.personal_id=ir.Candidate_personal_id and cy.id=ir.CourseYear_id
   `;
-  if (userRole === 'Admin') {
+  if (listExport && courseYearId) {
+    sqlString += `WHERE cy.id = ${courseYearId}`;
+  } else if (userRole === 'Admin') {
     sqlString += 'WHERE cy.enabled = 1;';
   } else {
     sqlString += `INNER JOIN (SELECT id, Course_id FROM User) u on co.id=u.Course_id
-    WHERE cy.enabled = 1
-    and u.id=${userId};`;
+      WHERE cy.enabled = 1
+      and u.id=${userId};`;
   }
+
   const candidates = await db.query(sqlString);
   if (candidates.length > 0) {
     const upgradedCandidates = await candidatesResultsService.calculateScore(
