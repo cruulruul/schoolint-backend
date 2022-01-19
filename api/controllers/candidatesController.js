@@ -104,8 +104,12 @@ candidatesController.updateCandidate = async (req, res) => {
       id,
       present,
     };
-
-    if (present) {
+    if (interviewResult) {
+      if (Object.keys(interviewResult).length > 0) {
+        candidateToUpdate.present = 1;
+      }
+    }
+    if (candidateToUpdate.present) {
       const success = await candidatesService.updateCandidate(
         candidateToUpdate,
       );

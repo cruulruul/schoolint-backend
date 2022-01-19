@@ -93,7 +93,6 @@ candidatesListsService.deleteListById = async (id) => {
         if (err) {
           if (connection) {
             connection.rollback();
-            connection.end();
           }
           const error = {
             error: err,

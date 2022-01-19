@@ -175,23 +175,33 @@ candidatesService.createCandidates = async (jsonData, courseId, listYear) => {
       error: 'Unable to insert the course year record into the database',
     };
   }
-  try {
-    Object.keys(jsonData).forEach(async (element) => {
-      const data = jsonData[element];
-      Object.keys(data).forEach(async (row) => {
-        data[row].CourseYear_id = courseYearId;
-        await db.getConnection((err, connection) => {
+
+  const dbQuery = await new Promise((resolve, reject) => {
+    db.getConnection((err, connection) => {
+      connection.beginTransaction();
+      Object.keys(jsonData).forEach(async (element) => {
+        const data = jsonData[element];
+        Object.keys(data).forEach(async (row) => {
+          data[row].CourseYear_id = courseYearId;
           connection.query('INSERT INTO Candidate SET ?', [data[row]]);
-          connection.release();
         });
       });
+      if (err) {
+        if (connection) {
+          connection.rollback();
+        }
+        const error = {
+          error: err,
+        };
+        reject(error);
+      } else {
+        connection.commit();
+        resolve(true);
+      }
+      connection.release();
     });
-  } catch (err) {
-    return {
-      error: `Something went wrong while inserting the records into the database, ${err}`,
-    };
-  }
-  return true;
+  });
+  return dbQuery;
 };
 
 /**

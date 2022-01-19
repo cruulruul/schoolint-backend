@@ -56,43 +56,47 @@ candidatesResultsService.addResultsToCandidates = async (
   jsonData,
 ) => {
   let duplicatePersonalId;
-  try {
-    if (!duplicatePersonalId) {
-      Object.keys(jsonData).forEach(async (element) => {
+
+  const existingResult = await candidatesResultsService.getCourseYearResults(
+    courseYearId,
+  );
+
+  if (existingResult.length > 0) {
+    return {
+      error: 'Course year already has imported results!',
+    };
+  }
+
+  const dbQuery = await new Promise((resolve, reject) => {
+    db.getConnection((err, connection) => {
+      connection.beginTransaction();
+      Object.keys(jsonData).forEach((element) => {
         const data = jsonData[element];
-        if (!duplicatePersonalId) {
-          Object.keys(data).forEach(async (row) => {
-            // Check dublicates
-            if (!duplicatePersonalId) {
-              if (data[row].Candidate_personal_id) {
-                const duplicateResult = await candidatesResultsService.checkDBDublicates(
-                  data[row].Candidate_personal_id,
-                  courseYearId,
-                );
-                if (duplicateResult) {
-                  duplicatePersonalId = data[row].Candidate_personal_id;
-                }
-              }
-              if (!duplicatePersonalId) {
-                data[row].CourseYear_id = courseYearId;
-                await db.query('INSERT INTO ImportResult SET ?;', [data[row]]);
-              }
-            }
-          });
-        }
+        Object.keys(data).forEach((row) => {
+          data[row].CourseYear_id = courseYearId;
+          connection.query('INSERT INTO ImportResult SET ?;', [data[row]]);
+        });
       });
-    }
-  } catch (err) {
-    return {
-      error: `Something went wrong while inserting the records into the database, ${err}`,
-    };
-  }
-  if (duplicatePersonalId) {
-    return {
-      error: `Found dublicate presonalId(${duplicatePersonalId}), reverted the import!`,
-    };
-  }
-  return true;
+      if (err) {
+        if (connection) {
+          connection.rollback();
+        }
+        const error = {
+          error: err,
+        };
+        reject(error);
+      } else {
+        if (duplicatePersonalId) {
+          connection.rollback();
+        } else {
+          connection.commit();
+        }
+        resolve(true);
+      }
+      connection.release();
+    });
+  });
+  return dbQuery;
 };
 
 candidatesResultsService.getInterviewResultsByUserId = async (id, userId) => {
@@ -347,18 +351,23 @@ candidatesResultsService.calculateScore = async (candidates) => {
   return newCandidates;
 };
 
-candidatesResultsService.checkDBDublicates = async (
-  personalId,
-  courseYearId,
-) => {
-  const match = await candidatesResultsService.getResultsByPersonalIdid(
-    personalId,
-    courseYearId,
+candidatesResultsService.getCourseYearResults = async (courseYearId) => {
+  const results = await db.query(
+    `SELECT 
+      Candidate_personal_id as personalId,
+        CourseYear_id as courseYearId,
+        room,
+        time,
+        cat1,
+        cat2,
+        cat3,
+        cat4,
+        final_score as finalScore
+    FROM schoolint.ImportResult
+    WHERE CourseYear_id = ?;`,
+    [courseYearId],
   );
-  if (match) {
-    return match;
-  }
-  return false;
+  return results;
 };
 
 module.exports = candidatesResultsService;
