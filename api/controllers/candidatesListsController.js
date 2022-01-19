@@ -213,6 +213,7 @@ candidatesListsController.deleteList = async (req, res) => {
 
 candidatesListsController.exportList = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+
   if (!id) {
     return res.status(400).json({
       error: `Not valid id: ${id}`,
