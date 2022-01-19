@@ -77,10 +77,10 @@ candidatesService.getCandidateById = async (id, userId, userRole) => {
       c.phone as phoneNumber,
       c.present,
       (CONCAT(IFNULL(c.notes,""), 
-      IFNULL(CONCAT("\nexam1:", c.exam1),""), 
-          IFNULL(CONCAT("\nexam2:", c.exam2),""), 
-          IFNULL(CONCAT("\nexam3:", c.exam3),""), 
-          IFNULL(CONCAT("\nexam4:", c.exam4),""))) as notes
+      IFNULL(CONCAT("\nEesti keel (RK): ", c.exam1),""), 
+          IFNULL(CONCAT("\nEesti keel 2. keelena (RK): ", c.exam2),""), 
+          IFNULL(CONCAT("\nEmakeel (eesti keel) (RK): ", c.exam3),""), 
+          IFNULL(CONCAT("\nInglise keel (VK, RK): ", c.exam4),""))) as notes
     FROM Candidate c
     INNER JOIN CourseYear cy on c.CourseYear_id=cy.id
     INNER JOIN Course co on cy.Course_id=co.id
