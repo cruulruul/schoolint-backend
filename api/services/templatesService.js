@@ -235,7 +235,7 @@ templatesService.validateJson = async (templateObject, data) => {
 
       if (emptyRows[0]) {
         return {
-          error: `Importimine ebaõnnestus, viga real, ${row + 2}, ${
+          error: `Importimine ebaõnnestus! Viga real ${row + 2}, ${
             emptyRows[1]
           }, väärtus on tühi sõne või puudulik!`,
         };
