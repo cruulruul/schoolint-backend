@@ -96,11 +96,11 @@ candidatesListsController.uploadList = async (req, res) => {
     // Check for necessary form-data values and mimetype
     // File related
     if (req.file === undefined) {
-      return res.status(400).send({ error: 'File missing' });
+      return res.status(400).send({ error: 'Fail on puudu!' });
     }
     const fileName = req.file.filename;
     if (!fileName) {
-      return res.status(500).send({ error: 'File not found' });
+      return res.status(500).send({ error: 'Fail on puudu!' });
     }
     // Check filetype (xls, xlsx)
     const fileTypes = ['xls', 'xlsx'];
@@ -109,17 +109,17 @@ candidatesListsController.uploadList = async (req, res) => {
       fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
       return res
         .status(406)
-        .send({ error: `Wrong file type, allowed: ${fileTypes}` });
+        .send({ error: `Vale failitüüp, lubatud: ${fileTypes}` });
     }
     // Check req.body related
     const courseId = parseInt(req.body.courseId, 10);
     const listYear = parseInt(req.body.year, 10);
     if (!courseId) {
-      return res.status(400).send({ error: 'CourseId missing' });
+      return res.status(400).send({ error: '"courseId" puudulik!' });
     }
 
     if (!listYear) {
-      return res.status(400).send({ error: 'Year missing' });
+      return res.status(400).send({ error: '"listYear" puudulik!' });
     }
 
     // Check does the course exists
@@ -127,7 +127,7 @@ candidatesListsController.uploadList = async (req, res) => {
     if (!course) {
       return res
         .status(404)
-        .send({ error: `Course with id, ${courseId}, not found!` });
+        .send({ error: `Kursust id-ga, ${courseId}, ei leitud!` });
     }
 
     // Check does the template exists
@@ -135,7 +135,7 @@ candidatesListsController.uploadList = async (req, res) => {
     if (!template) {
       return res
         .status(404)
-        .send({ error: 'SAIS template with id, 1, not found!' });
+        .send({ error: 'SAIS-i malli id-ga, 1, ei leitud!' });
     }
 
     // Converts the excel file to JSON and deletes the temporary file
@@ -143,7 +143,7 @@ candidatesListsController.uploadList = async (req, res) => {
     fs.unlinkSync(`${config.baseDir}/uploads/${fileName}`);
     if (!jsonData) {
       return res.status(500).send({
-        error: 'Something went wrong while parsing the excel file',
+        error: 'Exceli faili parsimisel esines viga!',
       });
     }
 
@@ -174,7 +174,7 @@ candidatesListsController.uploadList = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).send({
-      error: `An internal error occurred while trying to upload the list: ${err}`,
+      error: `Sisemine viga: ${err}`,
     });
   }
   return res.status(201).send({

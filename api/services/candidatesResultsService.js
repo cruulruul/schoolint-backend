@@ -7,8 +7,8 @@ const candidatesResultsService = {};
  * @param {int} personalId
  * @param {int} courseYearId
  * @returns {object}
- * If no record found, returns empty
- * On success object
+ * If no record found, returns empty an object
+ * On success an object
  */
 candidatesResultsService.getResultsByPersonalIdid = async (
   personalId,
@@ -57,16 +57,18 @@ candidatesResultsService.addResultsToCandidates = async (
 ) => {
   let duplicatePersonalId;
 
+  // Check for existing import
   const existingResult = await candidatesResultsService.getCourseYearResults(
     courseYearId,
   );
 
   if (existingResult.length > 0) {
     return {
-      error: 'Course year already has imported results!',
+      error: 'Antud kursusele on juba eelnevalt laetud testitulemused!',
     };
   }
 
+  // Insert results to the database
   const dbQuery = await new Promise((resolve, reject) => {
     db.getConnection((err, connection) => {
       connection.beginTransaction();
@@ -99,6 +101,14 @@ candidatesResultsService.addResultsToCandidates = async (
   return dbQuery;
 };
 
+/**
+ * Query for user given interview results
+ * @param {int} id
+ * @param {int} userId
+ * @returns {object}
+ * If no records found, returns empty object
+ * On success returns object
+ */
 candidatesResultsService.getInterviewResultsByUserId = async (id, userId) => {
   const interviewResult = await db.query(
     `
@@ -135,6 +145,13 @@ candidatesResultsService.getInterviewResultsByUserId = async (id, userId) => {
   return interviewResult[0];
 };
 
+/**
+ * Query for candidate interview results
+ * @param {int} id
+ * @returns {object}
+ * If no record found, returns empty an object
+ * On success an object
+ */
 candidatesResultsService.getCandidateInterviewResults = async (id) => {
   const interviewResults = await db.query(
     `

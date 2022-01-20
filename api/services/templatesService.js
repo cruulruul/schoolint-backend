@@ -174,7 +174,7 @@ templatesService.validateJson = async (templateObject, data) => {
   );
   if (matchingSheets.length === 0) {
     return {
-      error: `Üleslaetud exceli failis puuduvad vajalikud sheet'id. Nõutud: ${templateSheets}`,
+      error: `Excelis failis puuduvad vajalikud sheet'id. Nõutud: ${templateSheets}`,
     };
   }
 
@@ -215,7 +215,7 @@ templatesService.validateJson = async (templateObject, data) => {
       matchingHeaders.length !== skimmedTemplateHeaders.length
     ) {
       return {
-        error: `Required sheets are missing, required: ${skimmedTemplateHeaders.sort()}`,
+        error: `Nõutud päiseid ei ole, nõutud: ${skimmedTemplateHeaders.sort()}`,
       };
     }
   }
@@ -235,9 +235,9 @@ templatesService.validateJson = async (templateObject, data) => {
 
       if (emptyRows[0]) {
         return {
-          error: `Import failed, error on row ${row + 2}, ${
+          error: `Importimine ebaõnnestus, viga real, ${row + 2}, ${
             emptyRows[1]
-          }, value is spaces or missing!`,
+          }, väärtus on tühi sõne või puudulik!`,
         };
       }
     }
