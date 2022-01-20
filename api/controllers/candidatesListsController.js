@@ -115,7 +115,7 @@ candidatesListsController.uploadList = async (req, res) => {
     const courseId = parseInt(req.body.courseId, 10);
     const listYear = parseInt(req.body.year, 10);
     if (!courseId) {
-      return res.status(400).send({ error: '"courseId" puudulik!' });
+      return res.status(400).send({ error: 'Õppekava on valimata!' });
     }
 
     if (!listYear) {
