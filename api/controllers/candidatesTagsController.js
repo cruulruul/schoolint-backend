@@ -39,7 +39,7 @@ candidatesTagsController.getTagsByCourseId = async (req, res) => {
 candidatesTagsController.createTag = async (req, res) => {
   const { name, courseId } = req.body;
   if (!name || !courseId) {
-    return res.status(400).json('Required data missing');
+    return res.status(400).json({ error: 'Required data missing' });
   }
 
   const validCourse = await coursesService.getCourseById(courseId);

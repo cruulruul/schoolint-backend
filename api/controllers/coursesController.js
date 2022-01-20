@@ -44,9 +44,11 @@ coursesController.getCourseById = async (req, res) => {
  * On success, returns JSON with new Id.
  */
 coursesController.createCourse = async (req, res) => {
-  const { name } = req.body;
-  if (!name) {
-    return res.status(400).json('Required data "name" is missing');
+  const { name, templateId } = req.body;
+  if (!name || !templateId) {
+    return res
+      .status(400)
+      .json({ error: 'Required data "name" or "templateId" is missing' });
   }
 
   const existingCourse = await coursesService.getCourseByName(name);
@@ -55,7 +57,7 @@ coursesController.createCourse = async (req, res) => {
       error: `Course with name, ${name}, already exists in the database`,
     });
   }
-  const id = await coursesService.createCourse(name);
+  const id = await coursesService.createCourse(name, templateId);
   if (!id) {
     return res.status(500).json({
       error: 'Unable to insert the course record into the database',

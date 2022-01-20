@@ -46,7 +46,7 @@ const config = {
 };
 ```
 
-**Samm 3** : Paigalda andmebaas ja algandmed
+**Samm 3** : Paigalda andmebaasi, tabelid ja algandmed
 ```bash
 npm run db-generate
 ```
@@ -227,6 +227,8 @@ Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õiguse
 
 **Autentimine nõutud** : JAH
 
+**Nõutud päis** : `"Authorization", "Bearer <token>”`
+
 #### Õnnestunud tulemus:
 
 **Kood** : `200 OK`
@@ -239,32 +241,22 @@ Kui andmebaasis on olemas kandidaate
 {
     "candidates": [
         {
-            "id": 1,
-            "specialityCode": "LO22",
-            "courseName": "LO",
+            "id": 438,
+            "specialityCode": "RIF22",
+            "courseName": "RIF",
             "year": 2022,
-            "firstName": "Mati",
-            "lastName": "Tati",
-            "email": "mati@mati.ee",
-            "personalId": "39118082234",
-            "residence": "Talu 5, Tallinn",
-            "phoneNumber": "55434353",
-            "present": 0,
-            "notes": "ainult tasulisele kohale, eelmistest r.k tasuta õp  ei ole möödas 3 x nom.aeg\nexam1:50"
-        },
-        {
-            "id": 2,
-            "specialityCode": "LO22",
-            "courseName": "LO",
-            "year": 2022,
-            "firstName": "Artur",
-            "lastName": "Talvik",
-            "email": "Juha@puhas.ee",
-            "personalId": "39211982245",
-            "residence": "Karja tee 3, tartu",
-            "phoneNumber": "55434353",
-            "present": 0,
-            "notes": "eesti keel peab saavutama C1.2 õpingute jooksul\nexam3:50"
+            "courseYearId": 8,
+            "courseId": 1,
+            "firstName": "Pille",
+            "lastName": "Lille",
+            "email": "pille@lille.ee",
+            "personalId": 49118082234,
+            "present": 1,
+            "room": 203,
+            "time": "14:00:00",
+            "testScore": 42,
+            "interviewScore": 35,
+            "finalScore": 56
         },
     ]
 }
@@ -300,45 +292,45 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 ```json
 {
     "candidate": {
-        "id": 1,
-        "specialityCode": "KTD22",
-        "courseName": "KTD",
+        "id": 438,
+        "specialityCode": "RIF22",
+        "courseName": "RIF",
         "year": 2022,
-        "firstName": "Mati",
-        "lastName": "Tati",
-        "email": "mati@mati.ee",
-        "personalId": "39118082234",
-        "residence": "Talu 5, Tallinn",
-        "phoneNumber": "55434353",
-        "present": false,
-        "notes": "ainult tasulisele kohale, eelmistest r.k tasuta õp  ei ole möödas 3 x nom.aeg\nexam1:50",
-        "comments": "",
-        "room": "",
-        "finalScore": "",
+        "courseYearId": 8,
+        "courseId": 1,
+        "firstName": "Pille",
+        "lastName": "Lille",
+        "email": "pille@lille.ee",
+        "personalId": 49118082234,
+        "residence": "Reola 2, Tallinn",
+        "phoneNumber": "55434323",
+        "present": 1,
+        "notes": "ainult tasulisele kohale, eelmistest r.k tasuta õp  ei ole möödas 3 x nom.aeg\nEesti keel (RK): 70\nInglise keel (VK, RK): 90",
+        "room": 203,
+        "time": "14:00:00",
+        "created": "2022-01-20T00:19:45.000Z",
+        "finalScore": 42,
+        "background": "\"Millised on sinu varasemad õpi- ja töökogemused? Palun nimeta konkreetseid tegevusvaldkondi ning õppe- ja tööasutusi!\":  \"Natuke teinud kursuseid internetis, kuid töötanud ei ole\"\"Millised on sinu varasemad kokkupuuted IT-valdkonnaga? Võimalusel palun nimeta konkreetseid keeli, tarkvara programme ja koolitusi.\":  \"Vähesed\"\"Kirjelda ühe lausega seda, millisena näed oma rakendusinformaatika õpingute eesmärki!\":  \"Suudan kõike, mis tahan!\"",
         "scores": {
-            "kat1": "",
-            "kat2": "",
-            "kat3": "",
-            "kat4": ""
+            "cat1": 20,
+            "cat2": 10,
+            "cat3": 10,
+            "cat4": 2
         },
-        "tags": [
-            1,
-            2,
-            3
-        ],
-        "background": null,
-        "attachments": [
-            {
-                "id": 1,
-                "fileName": "1641553822368-makett.png",
-                "originalName": "makett.png"
-            },
-            {
-                "id": 2,
-                "fileName": "1641553866188-makett2.jpg",
-                "originalName": "makett2.jpg"
-            }
-        ]
+        "attachments": [],
+        "interviewResult": {
+            "id": 16,
+            "created": "2022-01-20T00:21:21.000Z",
+            "comment": "Arvan, et on äge",
+            "interviewCat1": 3,
+            "interviewCat2": 4,
+            "interviewCat3": 4,
+            "interviewCat4": 0,
+            "interviewCat5": 0,
+            "interviewCat6": 0,
+            "interviewCat7": 0,
+            "interviewCat8": 0
+        }
     }
 }
 ```
@@ -372,7 +364,7 @@ Tagastab kandidaadi olemasolul detailsemad andmed kandidaadi kohta
 <br>
 
 #### URL : `/candidates/:id`
-Uuendab kandidaadi kohal olekut
+Võimaldab uuendada kandidaadi kohalolekut ning lisada/uuendada intervjuu tulemusi.
 
 **Meetod** : `PATCH`
 
@@ -381,6 +373,20 @@ Uuendab kandidaadi kohal olekut
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
 
 **Nõutud URL parameetrid** : `id=[integer]` kus `id`on kandidaadid ID
+
+**Nõutud sisu:** :
+```json
+{
+    "present": 1,
+    "interviewResult" : {
+        "interviewCat1" : 4,
+        "interviewCat2" : 4,
+        "interviewCat3" : 4,
+        "comment" : "Tubli laps",
+        "tags" : [1,2]
+    }
+}
+```
 
 #### Õnnestunud tulemus:
 
@@ -660,11 +666,925 @@ Description
 <br>
 
 
-### Templates
+### Courses
 
-Mõeldud mallide, loomiseks, muutmiseks ja kustatmiseks.
+Mõeldud õppekavada pärimiseks, loomiseks ja kustutamiseks.
 
 <br>
+
+#### URL : `/courses`
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näited:**
+```json
+{
+    "courses": [
+        {
+            "id": 1,
+            "name": "RIF",
+            "templateId": 2
+        },
+        {
+            "id": 2,
+            "name": "LO",
+            "templateId": 2
+        },
+        {
+            "id": 3,
+            "name": "KTD",
+            "templateId": 2
+        }
+    ]
+}
+```
+
+Kui andmebaasis puuduvad kanded
+```json
+{
+    "courses": []
+}
+```
+
+<br>
+<br>
+
+#### URL : `/courses/:id`
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on kursuse ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näited:**
+```json
+{
+    "course": {
+        "id": 1,
+        "name": "RIF",
+        "templateId": 2
+    }
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri päritud ID-ga kannet
+
+**Sisu näide** :
+```json
+{
+      error: `No course found with id: ${id}`,
+}
+```
+
+<br>
+<br>
+
+#### URL : `/courses`
+
+**Meetod** : `POST`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud sisu** :
+```json
+{
+    "name": <nimi>,
+    "templateId": "1" /* siin seotakse kursus malliga, 
+    mida kasutatakse testitulemuste importimise kontrolliks */
+}
+```
+
+#### Õnnestunud tulemus:
+
+**Kood** : `201 Created`
+
+**Sisu näide:** :
+```json
+{
+    "id": <id>
+}
+```
+
+#### Error tulemused:
+
+**Kood:** `400 Bad Request`
+
+**Tingimus** : Nõutud andmed on puudlikud
+
+**Sisu näide** :
+```json
+{
+    error: "Required data \"name\" or \"templateId\" is missing"
+}
+```
+<br>
+
+**Kood:** `409 Conflit`
+
+**Tingimus** : Sama nimega kursus on juba süsteemi loodud
+
+**Sisu näide:** 
+```json
+{
+    error: "Course with name, ${name}, already exists in the database",
+}
+```
+<br>
+
+**Kood:** `500 Internal Server Error`
+
+**Tingimus:** Andmete serveerimise esines käsitlemata tõrge
+
+**Sisu näide** :
+```json
+{
+    error: "Unable to insert the course record into the database",
+}
+```
+
+<br>
+<br>
+
+#### URL : `/courses/:id`
+
+**Meetod** : `DELETE`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on kursuse ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `204 No Content`
+
+#### Error tulemused: 
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri päritud ID-ga kannet
+
+**Sisu näide** :
+```json
+{
+      error: `No course found with id: ${id}`,
+}
+```
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Kanne on seotud tag kandega
+
+**Sisu näide** :
+```json
+{
+      error: 'Unable to delete the course, used by tags!',
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata viga
+
+**Sisu näide** :
+```json
+{
+      error: 'Something went wrong while deleting the course',
+}
+```
+
+<br>
+<br>
+
+
+### Lists
+
+Antud lõpppunkti eesmärgiks on nimekirju pärida, luua, exportida, uuendada ja kustutada
+
+<nr>
+
+#### URL : `/lists`
+Tagastab andmebaasist kõik olemasolevad nimekirjad.
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näited:**
+```json
+{
+    "candidatesLists": [
+        {
+            "id": 8,
+            "year": 2022,
+            "listCode": "RIF",
+            "courseId": 1,
+            "enabled": 1,
+            "created": "2022-01-20T00:19:21.000Z"
+        }
+    ]
+}
+```
+Kui andmebaasis ei ole nimekirju:
+```json
+{
+    "candidatesLists": []
+}
+```
+
+#### Error tulemused :
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Pärimisel esines viga, mida ei ole täielikult käsitletud
+
+**Sisu näide** :
+```json
+{
+      error: `Could not get candidates list: ${err}`,
+}
+```
+
+<br>
+<br>
+
+#### URL : `/lists/export/:id`
+Mõeldud nimekirja tulemuse exportiks, olemasolul tagastab manuse faili.
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on nimekirja ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Tingimus** : Andmebaasis ja serveris eksisteerib küsitud nimekiri
+
+**Sisu näide** :
+`küsitud fail`
+
+#### Error tulemused :
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud ID ei ole valiidne
+
+**Sisu näide** :
+```json
+{
+    error: `Not valid id: ${id}`,
+}
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri päritud ID-ga kannet
+
+**Sisu näide** : 
+```json
+{
+    error: `No list found with id: ${id}`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata tõrge
+
+**Sinu näide** :
+```json
+{
+    error: `An internal error occurred while trying to delete the list: ${success.error}`,
+}
+```
+
+<br>
+<br>
+
+#### URL : `/lists/:id`
+Mõeldud nimekirja aktiivsuse oleku muutmiseks
+
+**Meetod** : `PATCH`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on nimekirja ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Tingimus** : Andmebaasis ja serveris eksisteerib küsitud nimekiri
+
+**Sisu näide** :
+```json
+{
+      success: true,
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud ID ei ole valiidne
+
+**Sisu näide** :
+```json
+{
+    error: `Not valid id: ${id}`,
+}
+```
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud andmed ei ole valiidsed või on puudulikud
+
+**Sisu näide** :
+```json
+{
+    error: 'Required data (enabled) is missing or bit (0/1)',
+}
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis puudub edastatud ID-ga nimekiri
+
+**Sisu näide** :
+```json
+{
+    error: `No list found with id: ${id}`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata tõrge
+
+**Sisu näide** :
+```json
+{
+    error: `Could not update candidates list: ${err}`,
+}
+```
+
+<br>
+<br>
+
+#### URL : `/listis`
+Mõeldud nimekirjade üleslaadimiseks (excel file)
+
+**Meetod** : `POST`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud FORM parameetrid** : 
+`file=[*]`, 
+`courseId=[integer]` kus `courseId` on õppekavaaasta ID, 
+`templateId=[integer]` kus `templateId` on SAIS-i template ID
+`year=[integer]` kus `year` on antud nimekirja aasta
+
+#### Õnnestunud tulemus:
+
+**Kood** : `201 Created`
+
+**Sisu näide** :
+```json
+{
+    success: 'Imported the list successfully',
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud fail on puudu
+
+**Sisu näide** : 
+```json
+{ error: 'Fail on puudu!' }
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Faili ei leitud peale uploadi
+
+**Sisu näide** :
+```json
+{ error: 'Fail on puudu!' }
+```
+
+**Kood** : `406 Conflit`
+
+**Tingimus** : Edastatud faili tüüp pole õige
+
+**Sisu näide** :
+```json
+{ error: `Vale failitüüp, lubatud: ['xls', 'xlsx']` }
+```
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Õppekava id on puudulik
+
+**Sisu näide** :
+```json
+{ error: 'Õppekava on valimata!' }
+```
+
+**Kood** : `400 Bad Request``
+
+**Tingimus** : Aasta on puudu!
+
+**Sisu näide** :
+```json
+{ error: "listYear" puudulik!' }
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Edastatud id-ga kursust ei leitud
+
+**Sisu näide** :
+```json
+{ error: `Kursust id-ga, ${courseId}, ei leitud!` }
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : SAIS-i mall id-ga 1 süsteemist puudu!
+
+**Sisu näide** :
+```json
+{ error: 'SAIS-i malli id-ga, 1, ei leitud!' }
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Exceli failis tandmete parsimisel tekkis probleem
+
+**Sisu näide** :
+```json
+{
+    error: 'Exceli faili parsimisel esines viga!',
+}
+```
+
+**Kood** : `406 Conflict`
+
+**Tingimus** : Andmete valideerimisel esinesid vead
+
+**Sisu näide** :
+```json
+{
+    error: validation.error, // Viga real 7, Isikukood, väli tühik või puudulik
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata tõrge
+
+**Sisu näide** :
+```json
+{
+    error: `Sisemine viga: ${err}`,
+}
+```
+
+<br>
+<br>
+
+#### URL : `/lists/:id`
+
+**Meetod** : `DELETE`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud Query parameetrid** : 
+`id=[integer]` kus `id` on nimekirja ID
+
+
+#### Õnnestunud tulemus:
+
+**Kood** : `204 No Content`
+
+**Tingimus** : Andmebaasis eksisteerib edastatatud ID'ga (`id`) nimekiri
+
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud nimekirja ID (`id`) ei ole valiidne või on puudulik
+
+**Sisu näide:**
+```json
+{
+    "error": "Not valid id: {id}"
+}
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Edastatud nimekirja ID-ga nimekirja andmebaasis ei eksisteeri
+
+**Sisu näide:**
+```json
+{
+    error: `No list found with id: ${id}`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata tõrge
+
+**Sisu näide** :
+```json
+{
+    error: `An internal error occurred while trying to delete the list: ${err}`,
+}
+```
+
+<br>
+<br>
+
+### Results
+
+Mõeldud kandidaatide testitulemuste üleslaadimiseks excel failina
+<br>
+
+#### URL : `/results`
+
+**Meetod** : `POST`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud FORM parameetrid** : 
+`file=[*]`, 
+`id=[integer]` kus `id` on õppekavaaasta ID, 
+
+#### Õnnestunud tulemus:
+
+**Kood** : `201 Created`
+
+**Sisu näide** :
+```json
+{
+    success: 'Imported the list successfully',
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Fail on puudu päringust
+
+**Sisu näide** :
+```json
+{ error: 'File missing' }
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Fail ei suudetud serverist tuvastada
+
+**Sisu näide** :
+```json
+{ error: 'File not found' }
+```
+
+**Kood** : `406 Conflit`
+
+**Tingimus** : Edastatud faili tüüp pole õige
+
+**Sisu näide** :
+```json
+{ error: `Wrong file type, allowed: ['xls', 'xlsx']` }
+```
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Edastatud kursuse nimekirja Id on puudulik või mitte valiidne
+
+**Sisu näide** :
+```json
+{ error: 'id missing' }
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Nimekirja id-ga andmebaasist ei leitud
+
+**Sisu näide** :
+```json
+{
+    error: `No template id found for course with id, ${courseList.courseId}`,
+}
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Nimekirja id-ga malli ei leitud
+
+**Sisu näide** :
+```json
+{
+    error: `Template with id, ${courseYearTemplateId}, not found!`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Exceli parsimisel tekkis tõrge
+
+**Sisu näide** :
+```json
+{
+    error: 'Something went wrong while parsing the excel file',
+}
+```
+
+**Kood** : `406 Conflict`
+
+**Tingimus** : Andmete valideerimisel esinesid vead
+
+**Sisu näide** :
+```json
+{
+    error: validation.error, // Viga real 2, TulemusX, väli tühik või puudulik
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Esines käsitlemata viga
+
+**Sisu näide** :
+```json
+{
+    error: `An internal error occurred while trying to upload the course results: ${err}`,
+}
+```
+
+### Tags
+
+Mõeldud siltide pärimiseks, loomiseks ja kustutamiseks
+<br>
+
+#### URL : `/tags`
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näide** : 
+```json
+{
+    "tags": [
+        {
+            "id": 1,
+            "name": "Innukas",
+            "courseId": 1,
+            "specialityCode": "RIF"
+        },
+        {
+            "id": 3,
+            "name": "Aeglane",
+            "courseId": 1,
+            "specialityCode": "RIF"
+        },
+        {
+            "id": 2,
+            "name": "Tubli",
+            "courseId": 2,
+            "specialityCode": "LO"
+        }
+    ]
+}
+```
+Kui andmebaasis ei eksisteeri silte
+```json
+{
+    "tags": []
+}
+```
+
+<br>
+<br>
+
+#### URL : `/tags/coursetags/:id`
+
+Mõeldud kindla õppekava siltide küsimuseks
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud Query parameetrid** : 
+`id=[integer]` kus `id` on kursuse ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näide** : 
+```json
+{
+    "tags": [
+        {
+            "id": 1,
+            "name": "Innukas",
+            "courseId": 1,
+            "specialityCode": "RIF"
+        },
+        {
+            "id": 3,
+            "name": "Aeglane",
+            "courseId": 1,
+            "specialityCode": "RIF"
+        }
+    ]
+}
+```
+Kui andmebaasis ei eksisteeri silte
+```json
+{
+    "tags": []
+}
+```
+
+<br>
+<br>
+
+#### URL : `/tags`
+
+**Meetod** : `POST`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud sisu** :
+```json
+{
+    "name": <sildinimi>,
+    "courseId": 1 // süsteemis olemasoleva õppekava id
+}
+```
+
+#### Õnnestunud tulemus:
+
+**Kood** : `201 Created`
+
+**Sisu näide:** :
+```json
+{
+    "id": <id>
+}
+```
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request``
+
+**Tingimused** : Edastadud andmed ei ole valiidsed või on puudulikud
+
+**Sisu näide** :
+```json
+{ error: 'Required data missing' }
+```
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Kursus, millele silte lisatakse ei eksisteeri andmebaasis
+
+**Sisu näide** :
+```json
+{
+    error: `Course with id, ${courseId}, does not exist in the database`,
+}
+```
+
+**Kood** : `409 Conflict`
+
+**Tingimus** : `Sama nimega kursus juba eksisteerib andmebaasis`
+
+**Sisu näide** :
+```json
+{
+    error: `Tag with name, ${name}, already exists in this course`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Käsitlemata viga
+
+**Sisu näide** :
+```json
+{
+    error: 'Unable to insert the tag record into the database',
+}
+```
+
+<br>
+<br>
+
+#### URL : `/tags/:id`
+
+**Meetod** : `DELETE`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud Query parameetrid** : 
+`id=[integer]` kus `id` on sildi ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `204 No Content`
+
+#### Error tulemused:
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri antud id-ga silti
+
+**Sisu näide** :
+```json
+{
+    error: `No tag found with id: ${id}`,
+}
+```
+
+**Kood** : `500 Internal Server Error`
+
+**Tingimus** : Käsitlemata viga
+
+**Sisu näide** :
+```json
+{
+    error: 'Something went wrong while deleting the tag',
+}
+```
+
+
+### Templates
 
 #### URL : `/templates`
 Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õigusest.
@@ -672,6 +1592,8 @@ Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õiguse
 **Meetod** : `GET`
 
 **Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
 
 #### Õnnestunud tulemus:
 
@@ -721,6 +1643,19 @@ Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õiguse
 }
 ```
 
+#### Error tulemused:
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaais ei eksisteeri malle
+
+**Sisu näide** : 
+```json
+{
+    error: 'No templates found',
+}
+```
+
 <br>
 <br>
 
@@ -733,7 +1668,7 @@ Mõeldud mallide pärimiseks id alusel.
 
 **Nõutud päis** : `"Authorization", "Bearer <token>"`
 
-**Nõutud URL parameetrid** : `id=[integer]` kus `id`on manuse ID
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on malli ID
 
 #### Õnnestunud tulemus:
 
@@ -766,10 +1701,26 @@ Mõeldud mallide pärimiseks id alusel.
 }
 ```
 
+#### Error tulemus:
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri soovitud id-ga malli
+
+**Sisu näide** :
+```json
+{
+    error: `No template found with id: ${id}`,
+}
+```
+
 <br>
 <br>
 
 #### URL : `/templates`
+
+**Meetod** : `POST`
+
 Mõeldud mallide loomiseks süsteemi.
 
 Malle saab luua süsteemi /lists ja /results lõpppunktide jaoks.
@@ -805,8 +1756,6 @@ room
 text
 time
 ```
-
-**Meetod** : `POST`
 
 **Autentimine nõutud** : JAH
 
@@ -875,7 +1824,7 @@ Näites näeme, et "text:" algusega exceli väli võib olla ka tühi väärtus (
 
 #### Õnnestunud tulemus:
 
-**Kood** : `200 OK`
+**Kood** : `201 OK`
 
 **Sisu näide** :
 ```json
@@ -883,6 +1832,73 @@ Näites näeme, et "text:" algusega exceli väli võib olla ka tühi väärtus (
     "id": <id>
 }
 ```
+
+#### Error tulemused:
+
+**Kood** : `400 Bad Request`
+
+**Tingimus** : Saadetud andmed ei ole valiidsed või puudulikud
+
+**Sisu näide**:
+```json
+{
+    error: 'Required data is missing',
+}
+```
+
+**Kood** : `500 Internal Servere Error`
+
+**Tingimus** : Käsitlemata viga
+
+**Sisu näidis** :
+```json
+{
+    error: 'Unable to insert the template into the database',
+}
+```
+
+<br>
+<br>
+
+#### URL : `/templates/:id`
+
+**Meetod** : `DELETE`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on temaplte ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `204 No Content`
+
+#### Error tulemused: 
+
+**Kood** : `404 Not Found`
+
+**Tingimus** : Andmebaasis ei eksisteeri päritud ID-ga malli
+
+**Sisu näide** :
+```json
+{
+      error: `No template found with id: ${id}`,
+}
+```
+
+**Kood** : `500 Internal Server Error``
+
+**Tingimus** : Esines teadmata viga
+
+**Sisu näide** :
+```json
+{
+    error: 'Something went wrong while deleting the template',
+}
+```
+
+
 
 
 

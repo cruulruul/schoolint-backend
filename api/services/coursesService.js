@@ -60,8 +60,11 @@ coursesService.getCourseByName = async (name) => {
  * @returns {object}
  * Returns JSON, new tag Id
  */
-coursesService.createCourse = async (name) => {
-  const result = await db.query('INSERT INTO Course (name) VALUES (?)', [name]);
+coursesService.createCourse = async (name, templateId) => {
+  const result = await db.query(
+    'INSERT INTO Course (name, template_id) VALUES (?,?)',
+    [name, templateId],
+  );
   return result.insertId;
 };
 
