@@ -660,9 +660,229 @@ Description
 <br>
 
 
+### Templates
 
+Mõeldud mallide, loomiseks, muutmiseks ja kustatmiseks.
 
+<br>
 
+#### URL : `/templates`
+Tagastab andmebaasist kõik olemasolevad kandidaadid tulenevalt kasutaja õigusest.
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näited:**
+```json
+{
+    "templates": [
+        {
+            "id": 1,
+            "name": "SAIS",
+            "values": {
+                "Sheet1": [
+                    "address;Aadress: tegelik",
+                    "email;E-post",
+                    "exam1|null;Eesti keel (Riigieksam)",
+                    "exam2|null;Eesti keel teise keelena (Riigieksam)",
+                    "exam3|null;Emakeel (eesti keel) (Riigieksam)",
+                    "exam4|null;Inglise keel (võõrkeel) (Riigieksam)",
+                    "first_name;Eesnimi",
+                    "last_name;Perenimi",
+                    "notes|null;Märkused",
+                    "personal_id;Isikukood",
+                    "phone;Telefon"
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "name": "RIF",
+            "values": {
+                "Tulemused": [
+                    "Candidate_personal_id;Isikukood",
+                    "cat1;Valik 35p",
+                    "cat2;Loogika 45p",
+                    "cat3;Prog. 10p",
+                    "cat4;Disain 10p",
+                    "final_score;KOKKU",
+                    "room;Ruum",
+                    "text|null;",
+                    "time;Aeg"
+                ]
+            }
+        }
+    ]
+}
+```
+
+<br>
+<br>
+
+#### URL : `/templates/:id`
+Mõeldud mallide pärimiseks id alusel.
+
+**Meetod** : `GET`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud URL parameetrid** : `id=[integer]` kus `id`on manuse ID
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Tingimus** : Andmebaasis eksisteerib küsitud mall
+
+**Sisu näide** :
+```json
+{
+    "template": {
+        "id": 1,
+        "name": "SAIS",
+        "values": {
+            "Sheet1": [
+                "address;Aadress: tegelik",
+                "email;E-post",
+                "exam1|null;Eesti keel (Riigieksam)",
+                "exam2|null;Eesti keel teise keelena (Riigieksam)",
+                "exam3|null;Emakeel (eesti keel) (Riigieksam)",
+                "exam4|null;Inglise keel (võõrkeel) (Riigieksam)",
+                "first_name;Eesnimi",
+                "last_name;Perenimi",
+                "notes|null;Märkused",
+                "personal_id;Isikukood",
+                "phone;Telefon"
+            ]
+        }
+    }
+}
+```
+
+<br>
+<br>
+
+#### URL : `/templates`
+Mõeldud mallide loomiseks süsteemi.
+
+Malle saab luua süsteemi /lists ja /results lõpppunktide jaoks.
+
+/lists lõpppunkti jaoks loodud mallid on mõeldud SAIS-i ehk esmase kandidaatide nimekirja üleslaadimiseks.
+/results lõppunkti jaoks loodud mallid on mõeldud kursuse testitulemuste valideerimiseks (loe täpsemalt POST /courses päringu kohta)
+
+SAIS importi jaoks on reserveeritud järgmised andmbaasi väljad:
+
+```
+personal_id
+first_name
+last_name
+email
+phone
+notes
+address
+exam1
+exam2
+exam3
+exam4
+```
+
+Testitulemuste jaoks on reserveeritud järgmised andmebaasi väljad:
+```
+Candidate_personal_id
+cat1
+cat2
+cat3
+cat4
+final_score
+room
+text
+time
+```
+
+**Meetod** : `POST`
+
+**Autentimine nõutud** : JAH
+
+**Nõutud päis** : `"Authorization", "Bearer <token>"`
+
+**Nõutud andmed** : 
+
+```json
+{
+  "name": <mallinimi>,
+  "values": {
+    <excelisheetinimi>: [
+        "<andmebaasiväljanimi>:<excelipäisenimi>",
+        "<andmebaasiväljanimi>|null:<excelipäisenimi>",
+        "text",
+        "text|null"
+    ]
+  }
+}
+```
+text võtmega väärtused liidetakse kokku üheks sõneks. "text" võti antud mallis tähendab exceli päise prefixit "text:" ehk kui üleslaetavas excelis on päise nimi algusega "text:" siis loetakse need kõik üheks sõneks kokku andmebaasi "text" välja.
+|null lisa tähendab, et importimisel ei kontrollida välja tühja väärtust (ehk võib olla tühi)
+
+Näide 1. SAIS
+```json
+{
+    "name": "SAIS",
+        "values": {
+            "Sheet1": [
+                "address;Aadress: tegelik",
+                "email;E-post",
+                "exam1|null;Eesti keel (Riigieksam)",
+                "exam2|null;Eesti keel teise keelena (Riigieksam)",
+                "exam3|null;Emakeel (eesti keel) (Riigieksam)",
+                "exam4|null;Inglise keel (võõrkeel) (Riigieksam)",
+                "first_name;Eesnimi",
+                "last_name;Perenimi",
+                "notes|null;Märkused",
+                "personal_id;Isikukood",
+                "phone;Telefon"
+            ]
+        }
+}
+```
+
+Näide 2. RIF õppekava mall
+```json
+{
+    "name": "RIF",
+    "values": {
+        "Tulemused": [
+            "Candidate_personal_id;Isikukood",
+            "cat1;Valik 35p",
+            "cat2;Loogika 45p",
+            "cat3;Prog. 10p",
+            "cat4;Disain 10p",
+            "final_score;KOKKU",
+            "room;Ruum",
+            "text|null;",
+            "time;Aeg"
+        ]
+    }
+}
+```
+Näites näeme, et "text:" algusega exceli väli võib olla ka tühi väärtus (|null on kasutuses).
+
+#### Õnnestunud tulemus:
+
+**Kood** : `200 OK`
+
+**Sisu näide** :
+```json
+{
+    "id": <id>
+}
+```
 
 
 
